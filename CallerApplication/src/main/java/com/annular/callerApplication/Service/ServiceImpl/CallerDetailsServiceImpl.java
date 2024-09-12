@@ -34,7 +34,8 @@ public class CallerDetailsServiceImpl implements CallerDetailsService {
     // Method to save audio file and return the file path
     private String saveAudioFile(MultipartFile file) throws IOException {
         // Define the directory to save the file on local disk C:
-        String directoryPath = "C:\\audio_files\\";
+        //String directoryPath = "C:\\audio_files\\";
+        String directoryPath = "/home/ubuntu/audio_files";
         File directory = new File(directoryPath);
         if (!directory.exists()) {
             directory.mkdirs(); // Create the directory if it doesn't exist
