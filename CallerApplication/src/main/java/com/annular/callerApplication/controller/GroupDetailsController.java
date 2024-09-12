@@ -36,7 +36,7 @@ public class GroupDetailsController {
         } 
     }
     
-    @PostMapping("/getGroupDetails")
+    @GetMapping("/getGroupDetails")
     public Response getGroupDetails() { 
         try {
             List<GroupResponse> savedGroupDetails = groupDetailsService.getAllGroupDetails();
