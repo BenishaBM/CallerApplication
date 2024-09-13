@@ -3,6 +3,7 @@ package com.annular.callerApplication.Service.ServiceImpl;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -79,6 +80,7 @@ public class GroupDetailServiceImpl implements GroupDetailsService {
 	    for (Group group : groups) {
 	        // Create a new response object for each group
 	        GroupResponse groupResponse = new GroupResponse();
+	        groupResponse.setGroupId(group.getGroupId());
 	        groupResponse.setGroupName(group.getGroupName());
 	        groupResponse.setGroupStatus(group.getIsActive());
 
@@ -90,6 +92,7 @@ public class GroupDetailServiceImpl implements GroupDetailsService {
 	        for (GroupDetails details : groupDetailsList) {
 	            MobileNumberResponse mobileNumberResponse = new MobileNumberResponse();
 	            mobileNumberResponse.setMobileNumber(details.getMobileNumber());
+	            mobileNumberResponse.setGroupDetailsId(details.getGroupDetailsId());
 	            mobileNumbers.add(mobileNumberResponse);
 	        }
 
@@ -102,6 +105,40 @@ public class GroupDetailServiceImpl implements GroupDetailsService {
 
 	    // 4. Return the list of group responses
 	    return groupResponses;
+	}
+
+	@Override
+	public Optional<GroupResponse> getGroupDetailsById(String groupId) {
+
+	    // Fetch the group by groupId
+	    Optional<Group> groupOptional = groupRepository.findById(groupId);
+
+	    if (!groupOptional.isPresent()) {
+	        return Optional.empty();
+	    }
+
+	    Group group = groupOptional.get();
+
+	    // Create and populate the GroupResponse
+	    GroupResponse groupResponse = new GroupResponse();
+	    groupResponse.setGroupName(group.getGroupName());
+	    groupResponse.setGroupStatus(group.getIsActive());
+	    groupResponse.setGroupId(group.getGroupId());
+
+	    // Fetch associated mobile numbers
+	    List<GroupDetails> groupDetailsList = groupDetailRepository.findByGroupId(group.getGroupId());
+
+	    List<MobileNumberResponse> mobileNumbers = new ArrayList<>();
+	    for (GroupDetails details : groupDetailsList) {
+	        MobileNumberResponse mobileNumberResponse = new MobileNumberResponse();
+	        mobileNumberResponse.setMobileNumber(details.getMobileNumber());
+	        mobileNumberResponse.setGroupDetailsId(details.getGroupDetailsId());
+	        mobileNumbers.add(mobileNumberResponse);
+	    }
+
+	    groupResponse.setMobileNumbers(mobileNumbers);
+
+	    return Optional.of(groupResponse);
 	}
 
 

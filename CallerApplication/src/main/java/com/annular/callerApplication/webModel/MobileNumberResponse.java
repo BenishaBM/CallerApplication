@@ -14,5 +14,6 @@ import lombok.NoArgsConstructor;
 public class MobileNumberResponse {
 	
 	private String mobileNumber;
+	private String groupDetailsId;
 
 }

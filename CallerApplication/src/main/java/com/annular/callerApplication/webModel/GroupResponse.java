@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class GroupResponse {
 	private String groupName;
+	private String groupId;
     private String groupStatus;
     private List<MobileNumberResponse> mobileNumbers;
 
