@@ -8,4 +8,6 @@ import com.annular.callerApplication.model.Group;
 @Repository
 public interface GroupRepository extends MongoRepository<Group, String> {
 
+	void deleteByGroupId(String groupId);
+
 }

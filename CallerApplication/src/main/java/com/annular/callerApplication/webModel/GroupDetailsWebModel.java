@@ -23,6 +23,7 @@ public class GroupDetailsWebModel {
 	private LocalDateTime updatedOn;
 	private Integer createdBy;
 	private Integer updatedBy;
+	private String groupId;
 	
 
 }

@@ -15,4 +15,10 @@ public interface GroupDetailsService {
 
 	Optional<GroupResponse> getGroupDetailsById(String groupId);
 
+	GroupResponse updateGroupDetailsById(GroupDetailsWebModel groupDetailsWebModel);
+
+	void deleteGroupAndDetails(String groupId);
+
+	void deleteGroupDetail(String groupId, String groupDetailsId);
+
 }

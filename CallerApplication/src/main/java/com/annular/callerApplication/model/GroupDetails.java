@@ -1,6 +1,9 @@
 package com.annular.callerApplication.model;
 
 import java.time.LocalDateTime;
+import java.util.List;
+
+import javax.persistence.ElementCollection;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -19,8 +22,8 @@ public class GroupDetails {
     @Id
     private String groupDetailsId;
     
-    @Field("mobileNumber")
-    private String mobileNumber;
+    @Field
+    private String mobileNumbers;
    
     @Field("isActive")
     private String isActive;
