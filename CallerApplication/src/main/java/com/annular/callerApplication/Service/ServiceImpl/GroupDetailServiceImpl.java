@@ -3,9 +3,12 @@ package com.annular.callerApplication.Service.ServiceImpl;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,7 +22,8 @@ import com.annular.callerApplication.repository.GroupRepository;
 import com.annular.callerApplication.webModel.GroupDetailsWebModel;
 import com.annular.callerApplication.webModel.GroupResponse;
 import com.annular.callerApplication.webModel.MobileNumberResponse;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 @Service
 public class GroupDetailServiceImpl implements GroupDetailsService {
 
@@ -35,36 +39,36 @@ public class GroupDetailServiceImpl implements GroupDetailsService {
 	@Override
 	public Group saveGroupDetails(GroupDetailsWebModel groupDetailsWebModel) {
 
-		Group groupDetails = new Group();
+	    // Create a new Group entity
+	    Group groupDetails = new Group();
+	    groupDetails.setGroupName(groupDetailsWebModel.getGroupName());
+	    groupDetails.setIsActive(groupDetailsWebModel.getIsActive());
+	    groupDetails.setCreatedOn(LocalDateTime.now());
+	    // Uncomment and use this if user details are needed
+	    // UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+	    // groupDetails.setCreatedBy(Integer.parseInt(userDetails.getUsername()));
 
-		groupDetails.setGroupName(groupDetailsWebModel.getGroupName());
-		groupDetails.setIsActive(groupDetailsWebModel.getIsActive());
-		groupDetails.setCreatedOn(LocalDateTime.now());
-		// groupDetails.setCreatedBy(userDetails.userInfo().getId());
-		// Retrieve the current authenticated user details
-//	    UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//	    groupDetails.setCreatedBy(Integer.parseInt(userDetails.getUsername()));
+	    // Save the Group entity to the database
+	    Group savedGroupDetails = groupRepository.save(groupDetails);
 
-		// Save the GroupDetails entity to the database
-		Group savedGroupDetails = groupRepository.save(groupDetails);
+	    // Assuming you have a List of MobileNumberResponse in GroupDetailsWebModel
+	    List<MobileNumberResponse> mobileNumbers = groupDetailsWebModel.getMobileNumber();
 
-		// Assuming you have a List of mobile numbers in GroupDetailsWebModel
-		List<String> mobileNumbers = groupDetailsWebModel.getMobileNumber();
+	    // Iterate over mobile numbers and save them in the GroupDetails table
+	    for (MobileNumberResponse mobileNumberDTO : mobileNumbers) {
+	        String mobileNumber = mobileNumberDTO.getMobileNumber(); // Get the mobile number from MobileNumberResponse
+	        GroupDetails callerDetails = new GroupDetails();
+	        callerDetails.setMobileNumbers(mobileNumber);
+	        callerDetails.setGroupId(savedGroupDetails.getGroupId()); // Set the group ID
+	        callerDetails.setCreatedOn(LocalDateTime.now());
+	        callerDetails.setCreatedBy(groupDetailsWebModel.getCreatedBy());
 
-		// Iterate over mobile numbers and save them in the CallerDetails table
-		for (String mobileNumber : mobileNumbers) {
-			GroupDetails callerDetails = new GroupDetails();
-			callerDetails.setMobileNumbers(mobileNumber);
-			callerDetails.setGroupId(savedGroupDetails.getGroupId()); // Set the group ID
-			callerDetails.setCreatedOn(LocalDateTime.now());
-			callerDetails.setCreatedBy(groupDetailsWebModel.getCreatedBy());
+	        // Save the GroupDetails entity to the database
+	        groupDetailRepository.save(callerDetails);
+	    }
 
-			// Save the CallerDetails entity to the database
-			groupDetailRepository.save(callerDetails);
-		}
-
-		// Return the saved GroupDetails entity
-		return savedGroupDetails;
+	    // Return the saved Group entity
+	    return savedGroupDetails;
 	}
 
 	@Override
@@ -142,129 +146,79 @@ public class GroupDetailServiceImpl implements GroupDetailsService {
 	}
 	@Override
 	public GroupResponse updateGroupDetailsById(GroupDetailsWebModel groupDetailsWebModel) {
-	    // Step 1: Check if the groupId exists in the Group table
+	    Logger logger = LoggerFactory.getLogger(getClass());
+	    
+	    logger.info("Starting update for groupId: {}", groupDetailsWebModel.getGroupId());
+
 	    Optional<Group> existingGroupOpt = groupRepository.findById(groupDetailsWebModel.getGroupId());
 
 	    if (existingGroupOpt.isPresent()) {
-	        // Update the existing Group entity
 	        Group existingGroup = existingGroupOpt.get();
 	        existingGroup.setGroupName(groupDetailsWebModel.getGroupName());
 	        existingGroup.setIsActive(groupDetailsWebModel.getIsActive());
 	        existingGroup.setUpdatedOn(LocalDateTime.now());
 	        existingGroup.setUpdatedBy(groupDetailsWebModel.getUpdatedBy());
-
-	        // Save the updated Group entity
 	        groupRepository.save(existingGroup);
 
-	        // Step 2: Check if the GroupDetails entries exist for the given groupId
-	        List<GroupDetails> groupDetailsList = groupDetailRepository.findByGroupId(groupDetailsWebModel.getGroupId());
+	        List<GroupDetails> existingGroupDetails = groupDetailRepository.findByGroupId(groupDetailsWebModel.getGroupId());
+	        Map<String, GroupDetails> existingDetailsMap = existingGroupDetails.stream()
+	                .collect(Collectors.toMap(GroupDetails::getGroupDetailsId, Function.identity()));
 
-	        List<String> newMobileNumbers = groupDetailsWebModel.getMobileNumber();
-	        for (String mobileNumber : newMobileNumbers) {
-	            // Check if a groupDetailsId is provided to update the existing mobile number
-	            Optional<GroupDetails> existingGroupDetailsOpt = groupDetailsList.stream()
-	                .filter(groupDetail -> groupDetailsWebModel.getGropuDetailsId() != null 
-	                    && groupDetailsWebModel.getGropuDetailsId().equals(groupDetail.getGroupDetailsId()))
-	                .findFirst();
+	        logger.info("Existing Group Details: {}", existingDetailsMap);
 
-	            if (existingGroupDetailsOpt.isPresent()) {
-	                // Update the existing GroupDetails entry
-	                GroupDetails existingGroupDetails = existingGroupDetailsOpt.get();
-	                existingGroupDetails.setMobileNumbers(mobileNumber);
-	                existingGroupDetails.setUpdatedOn(LocalDateTime.now());
-	                existingGroupDetails.setUpdatedBy(groupDetailsWebModel.getUpdatedBy());
+	        for (MobileNumberResponse mobileNumberDTO : groupDetailsWebModel.getMobileNumber()) {
+	            String mobileNumber = mobileNumberDTO.getMobileNumber(); // Log here
+	            String groupDetailsId = mobileNumberDTO.getGroupDetailsId(); // Log here
 
-	                // Save the updated GroupDetails entry
-	                groupDetailRepository.save(existingGroupDetails);
-	            } else {
-	                // Check if the mobile number already exists
-	                boolean mobileNumberExists = groupDetailsList.stream()
-	                    .anyMatch(groupDetail -> groupDetail.getMobileNumbers().equals(mobileNumber));
+	            logger.info("Processing MobileNumberResponse - mobileNumber: {}, groupDetailsId: {}", mobileNumber, groupDetailsId);
 
-	                if (!mobileNumberExists) {
-	                    // Create a new GroupDetails entry if the mobile number is not found
-	                    GroupDetails newGroupDetails = new GroupDetails();
-	                    newGroupDetails.setMobileNumbers(mobileNumber);
-	                    newGroupDetails.setGroupId(existingGroup.getGroupId());
-	                    newGroupDetails.setCreatedOn(LocalDateTime.now());
-	                    newGroupDetails.setCreatedBy(groupDetailsWebModel.getCreatedBy());
-
-	                    // Save the new GroupDetails entry
-	                    groupDetailRepository.save(newGroupDetails);
+	            if (groupDetailsId != null) {
+	                GroupDetails existingDetail = existingDetailsMap.get(groupDetailsId);
+	                if (existingDetail != null) {
+	                    logger.info("Found existing GroupDetails with ID: {}", groupDetailsId);
+	                    existingDetail.setMobileNumbers(mobileNumber);
+	                    existingDetail.setUpdatedOn(LocalDateTime.now());
+	                    existingDetail.setUpdatedBy(groupDetailsWebModel.getUpdatedBy());
+	                    groupDetailRepository.save(existingDetail);
+	                    logger.info("Updated existing GroupDetails - groupDetailsId: {}, mobileNumber: {}", groupDetailsId, mobileNumber);
+	                } else {
+	                    logger.warn("GroupDetails with ID {} not found for update", groupDetailsId);
 	                }
+	            } else {
+	                logger.info("Creating new GroupDetails with mobileNumber: {}", mobileNumber);
+	                GroupDetails newGroupDetails = new GroupDetails();
+	                newGroupDetails.setMobileNumbers(mobileNumber);
+	                newGroupDetails.setGroupId(existingGroup.getGroupId());
+	                newGroupDetails.setCreatedOn(LocalDateTime.now());
+	                newGroupDetails.setCreatedBy(groupDetailsWebModel.getCreatedBy());
+	                groupDetailRepository.save(newGroupDetails);
+	                logger.info("Created new GroupDetails with mobileNumber: {}", mobileNumber);
 	            }
 	        }
 
-	        // Step 3: Create and return GroupResponse
+	        List<MobileNumberResponse> mobileNumberResponses = existingGroupDetails.stream()
+	            .map(detail -> {
+	                String mobileNumber = detail.getMobileNumbers(); // Log here
+	                String groupDetailsId = detail.getGroupDetailsId(); // Log here
+	                logger.info("Mapping GroupDetails to MobileNumberResponse - mobileNumber: {}, groupDetailsId: {}", mobileNumber, groupDetailsId);
+	                return new MobileNumberResponse(mobileNumber, groupDetailsId);
+	            })
+	            .collect(Collectors.toList());
+
 	        GroupResponse groupResponse = new GroupResponse();
 	        groupResponse.setGroupId(existingGroup.getGroupId());
 	        groupResponse.setGroupName(existingGroup.getGroupName());
 	        groupResponse.setGroupStatus(existingGroup.getIsActive());
-	        groupResponse.setMobileNumbers(groupDetailsList.stream()
-	            .map(detail -> new MobileNumberResponse(detail.getMobileNumbers(), detail.getGroupDetailsId())) // Assuming MobileNumberResponse has a constructor that takes a mobile number
-	            .collect(Collectors.toList()));
+	        groupResponse.setMobileNumbers(mobileNumberResponses);
 
+	        logger.info("Update successful for groupId: {}", existingGroup.getGroupId());
 	        return groupResponse;
 	    } else {
-	        // Handle the case where the groupId does not exist
 	        throw new IllegalArgumentException("Group with ID " + groupDetailsWebModel.getGroupId() + " does not exist.");
 	    }
 	}
 
 
-//	@Override
-//	public GroupResponse updateGroupDetailsById(GroupDetailsWebModel groupDetailsWebModel) {
-//	    // Step 1: Check if the groupId exists in the Group table
-//	    Optional<Group> existingGroupOpt = groupRepository.findById(groupDetailsWebModel.getGroupId());
-//
-//	    if (existingGroupOpt.isPresent()) {
-//	        // Update the existing Group entity
-//	        Group existingGroup = existingGroupOpt.get();
-//	        existingGroup.setGroupName(groupDetailsWebModel.getGroupName());
-//	        existingGroup.setIsActive(groupDetailsWebModel.getIsActive());
-//	        existingGroup.setUpdatedOn(LocalDateTime.now());
-//	        existingGroup.setUpdatedBy(groupDetailsWebModel.getUpdatedBy());
-//
-//	        // Save the updated Group entity
-//	        groupRepository.save(existingGroup);
-//
-//	        // Step 2: Check if the GroupDetails entries exist for the given groupId
-//	        List<GroupDetails> groupDetailsList = groupDetailRepository.findByGroupId(groupDetailsWebModel.getGroupId());
-//
-//	        List<String> newMobileNumbers = groupDetailsWebModel.getMobileNumber();
-//	        for (String mobileNumber : newMobileNumbers) {
-//	            // Check if the mobile number already exists
-//	            boolean mobileNumberExists = groupDetailsList.stream()
-//	                .anyMatch(groupDetail -> groupDetail.getMobileNumbers().equals(mobileNumber));
-//
-//	            if (!mobileNumberExists) {
-//	                // Create a new GroupDetails entry if the mobile number is not found
-//	                GroupDetails newGroupDetails = new GroupDetails();
-//	                newGroupDetails.setMobileNumbers(mobileNumber);
-//	                newGroupDetails.setGroupId(existingGroup.getGroupId());
-//	                newGroupDetails.setCreatedOn(LocalDateTime.now());
-//	                newGroupDetails.setCreatedBy(groupDetailsWebModel.getCreatedBy());
-//
-//	                // Save the new GroupDetails entry
-//	                groupDetailRepository.save(newGroupDetails);
-//	            }
-//	        }
-//
-//	        // Step 3: Create and return GroupResponse
-//	        GroupResponse groupResponse = new GroupResponse();
-//	        groupResponse.setGroupId(existingGroup.getGroupId());
-//	        groupResponse.setGroupName(existingGroup.getGroupName());
-//	        groupResponse.setGroupStatus(existingGroup.getIsActive());
-//	        groupResponse.setMobileNumbers(groupDetailsList.stream()
-//	            .map(detail -> new MobileNumberResponse(detail.getMobileNumbers(), detail.getGroupDetailsId())) // Assuming MobileNumberResponse has a constructor that takes a mobile number
-//	            .collect(Collectors.toList()));
-//
-//	        return groupResponse;
-//	    } else {
-//	        // Handle the case where the groupId does not exist
-//	        throw new IllegalArgumentException("Group with ID " + groupDetailsWebModel.getGroupId() + " does not exist.");
-//	    }
-//	}
 
     public void deleteGroupAndDetails(String groupId) {
         // Check if group exists in the Group collection

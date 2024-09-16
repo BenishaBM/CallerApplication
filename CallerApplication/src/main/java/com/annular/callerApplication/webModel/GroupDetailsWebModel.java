@@ -16,7 +16,7 @@ public class GroupDetailsWebModel {
 	private String gropuDetailsId;
 	private String groupName;
 	private String isActive;
-	private List<String> mobileNumber;
+	private List<MobileNumberResponse> mobileNumber;
 	private LocalDateTime createdOn;
 	private LocalDateTime updatedOn;
 	private Integer createdBy;
