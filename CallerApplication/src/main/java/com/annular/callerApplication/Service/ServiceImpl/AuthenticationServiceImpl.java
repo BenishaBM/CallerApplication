@@ -57,44 +57,42 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 	@Override
 	public ResponseEntity<?> register(UserWebModel userWebModel, String request) {
-		HashMap<String, Object> response = new HashMap<>();
-		try {
-			logger.info("Register method start");
-			Optional<User> userData = userRepository.findByEmailIdAndUserType(userWebModel.getEmailId(),
-					userWebModel.getUserType());
-			if (userData.isEmpty()) {
-				User user = new User();
-				user.setMobileNumber(userWebModel.getMobileNumber());
+	    HashMap<String, Object> response = new HashMap<>();
+	    try {
+	        logger.info("Register method start");
+	        Optional<User> userData = userRepository.findByEmailIdAndUserType(userWebModel.getEmailId(),
+	                userWebModel.getUserType());
+	        if (userData.isEmpty()) {
+	            User user = new User();
+	            user.setMobileNumber(userWebModel.getMobileNumber());
 
-				StringBuilder name = new StringBuilder();
-				if (!Utility.isNullOrBlankWithTrim(userWebModel.getUserName())) {
-					user.setUserName(userWebModel.getUserName());
+	            if (!Utility.isNullOrBlankWithTrim(userWebModel.getUserName())) {
+	                user.setUserName(userWebModel.getUserName());
+	            }
 
-				}
+	            user.setEmailId(userWebModel.getEmailId());
+	            user.setUserType(userWebModel.getUserType());
+	            user.setIsActive(true);
+	            user.setGender(userWebModel.getGender());
 
-				user.setEmailId(userWebModel.getEmailId());
-				user.setUserType(userWebModel.getUserType());
-				user.setIsActive(true);
-				user.setGender(userWebModel.getGender());
+	            String encryptPwd = new BCryptPasswordEncoder().encode(userWebModel.getPassword());
+	            user.setPassword(encryptPwd);
 
-				String encryptPwd = new BCryptPasswordEncoder().encode(userWebModel.getPassword());
-				user.setPassword(encryptPwd);
-
-				user = userRepository.save(user);
-				response.put("userDetails", user);
-				// response.put("verificationCode", user.getVerificationCode());
-			} else {
-				return ResponseEntity.unprocessableEntity().body(new Response(1, "This Account already exists", ""));
-			}
-			logger.info("Register method end");
-		} catch (Exception e) {
-			logger.error("Register Method Exception -> {}", e.getMessage());
-			e.printStackTrace();
-			return ResponseEntity.internalServerError()
-					.body(new Response(-1, "Failed to register the user. Try Again...", e.getMessage()));
-		}
-		return ResponseEntity.ok()
-				.body(new Response(1, "User was registered  successfully...", response));
+	            user = userRepository.save(user); // Save the user to generate ID
+	            // Optionally, retrieve the user again to ensure all fields are populated
+	            response.put("userDetails", user);
+	        } else {
+	            return ResponseEntity.unprocessableEntity().body(new Response(1, "This Account already exists", ""));
+	        }
+	        logger.info("Register method end");
+	    } catch (Exception e) {
+	        logger.error("Register Method Exception -> {}", e.getMessage());
+	        e.printStackTrace();
+	        return ResponseEntity.internalServerError()
+	                .body(new Response(-1, "Failed to register the user. Try Again...", e.getMessage()));
+	    }
+	    return ResponseEntity.ok()
+	            .body(new Response(1, "User was registered successfully...", response));
 	}
 
 	@Override

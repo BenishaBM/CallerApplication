@@ -25,7 +25,6 @@ import lombok.ToString;
 public class User {
 
     @Id
-    @Field(name = "id")
     private String id; // MongoDB uses String type for ID
 
     @Field(name = "email_id")

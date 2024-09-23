@@ -113,7 +113,7 @@ public class AuthController {
 	        Optional<RefreshToken> data = refreshTokenRepository.findByToken(userWebModel.getToken());
 	        if (data.isPresent()) {
 	            Response token = userService.verifyExpiration(data.get());
-	            Optional<User> userData = userRepository.findById(data.get().getUserId());
+	            Optional<User> userData = userRepository.findById(data.get().getId());
 	            String jwt = jwtUtils.generateJwtTokenForRefreshToken(userData.get());
 	            RefreshToken refreshToken = data.get();
 	            refreshToken.setExpiryToken(LocalTime.now().plusMinutes(17));
