@@ -99,6 +99,7 @@ public class CallerDetailsServiceImpl implements CallerDetailsService {
         callerDetails.setUpdatedBy(callerDetailsWebModel.getUpdatedBy());
         callerDetails.setCallerStartTime(callerDetailsWebModel.getCallerStartTime());
         callerDetails.setCallerEndTime(callerDetailsWebModel.getCallerEndTime());
+        callerDetails.setNotes(callerDetailsWebModel.getNotes());
         callerDetails.setIsActive(true);
 
         // Handle audio file if present

@@ -31,5 +31,6 @@ public class CallerDetailsWebModel {
 	    private Integer updatedBy;
 	    private MultipartFile audioFileData;  // If you're uploading audio files
 	    private Boolean isActive;
+	    private String notes;
 
 }

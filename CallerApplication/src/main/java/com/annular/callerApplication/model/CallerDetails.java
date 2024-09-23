@@ -58,4 +58,7 @@ public class CallerDetails {
     
     @Field("is_Active")
     private Boolean isActive;
+    
+    @Field("notes")
+    private String notes;
 }

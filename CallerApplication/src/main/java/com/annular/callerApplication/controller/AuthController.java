@@ -53,40 +53,43 @@ public class AuthController {
 //    @Autowired
 //    UserService userServices;
 	
-	 @PostMapping("login")
-	    public ResponseEntity<?> login(@RequestBody UserWebModel userWebModel) {
-	        try {
-	            Optional<User> checkUsername = userRepository.findByEmailId(userWebModel.getEmailId());
-	            if (checkUsername.isPresent()) {
-	                loginConstants.setUserType(userWebModel.getUserType());
-	                logger.info("In login() User type from constants -> {}", loginConstants.getUserType());
+	@PostMapping("login")
+	public ResponseEntity<?> login(@RequestBody UserWebModel userWebModel) {
+	    try {
+	        Optional<User> checkUsername = userRepository.findByEmailId(userWebModel.getEmailId());
+	        if (checkUsername.isPresent()) {
+	            loginConstants.setUserType(userWebModel.getUserType());
+	            logger.info("In login() User type from constants -> {}", loginConstants.getUserType());
 
-	                Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userWebModel.getEmailId(), userWebModel.getPassword()));
-	                SecurityContextHolder.getContext().setAuthentication(authentication);
-	                RefreshToken refreshToken = userService.createRefreshToken(userWebModel);
+	            Authentication authentication = authenticationManager.authenticate(
+	                    new UsernamePasswordAuthenticationToken(userWebModel.getEmailId(), userWebModel.getPassword()));
+	            SecurityContextHolder.getContext().setAuthentication(authentication);
+	            RefreshToken refreshToken = userService.createRefreshToken(userWebModel);
 
-	                User user = checkUsername.get();
+	            User user = checkUsername.get(); // Fetch the user from MongoDB
+             System.out.println(user);
+	            String jwt = jwtUtils.generateJwtToken(authentication);
+	            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+	            logger.info("Login Controller ---- Finished");
 
-	                String jwt = jwtUtils.generateJwtToken(authentication);
-	                UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-	                logger.info("Login Controller ---- Finished");
-	                return ResponseEntity.ok(new JwtResponse(jwt,
-	                        userDetails.getId(),
-	                        userDetails.getUsername(),
-	                        userDetails.getEmail(),
-
-	                        1,
-	                        refreshToken.getToken(),
-	                        userDetails.getUserType()
-	                        ));
-	            }
-	        } catch (Exception e) {
-	            logger.error("Error at login() -> {}", e.getMessage());
-	            e.printStackTrace();
-	            return ResponseEntity.internalServerError().body(new Response(-1, "Error while validating the user credentials. Please try again...", null));
+	            // Ensure userId from MongoDB is included in JwtResponse
+	            return ResponseEntity.ok(new JwtResponse(jwt,
+	                    user.getUserId(), // Use user.getUserId() from MongoDB
+	                    userDetails.getUsername(),
+	                    userDetails.getEmail(),
+	                    1,
+	                    refreshToken.getToken(),
+	                    userDetails.getUserType()
+	            ));
 	        }
-	        return ResponseEntity.badRequest().body(new Response(-1, "Invalid EmailId", ""));
+	    } catch (Exception e) {
+	        logger.error("Error at login() -> {}", e.getMessage());
+	        e.printStackTrace();
+	        return ResponseEntity.internalServerError().body(new Response(-1, "Error while validating the user credentials. Please try again...", null));
 	    }
+	    return ResponseEntity.badRequest().body(new Response(-1, "Invalid EmailId", ""));
+	}
+
 
 	    @PostMapping("register")
 	    public ResponseEntity<?> userRegister(@RequestBody UserWebModel userWebModel, String request) {
