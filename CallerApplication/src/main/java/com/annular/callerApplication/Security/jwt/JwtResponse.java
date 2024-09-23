@@ -17,7 +17,7 @@ import lombok.ToString;
 public class JwtResponse {
 
     private String jwt;
-    private String id;
+    private String userId;
     private String username;
     private String email;
     private Integer status;

@@ -60,6 +60,20 @@ public class CallerDetailsController {
             return new Response(-1, "Unexpected error occurred: " + e.getMessage(), "");
         }
     }
+   @GetMapping("getMobileDetails")
+   public Response getAllMobileDetails(@RequestParam String senderNumber) {
+       try {
+           List<CallerDetails> callerDetails = callerDetailsService.getAllMobileDetails(senderNumber);
+           if (callerDetails != null && !callerDetails.isEmpty()) {
+               return new Response(0, "Caller details retrieved successfully.", callerDetails);
+           } else {
+               return new Response(-1, "Caller details not found.", "");
+           }
+       } catch (Exception e) {
+           return new Response(-1, "Unexpected error occurred: " + e.getMessage(), "");
+       }
+   }
+
 }
 
 

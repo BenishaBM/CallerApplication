@@ -30,16 +30,16 @@ public class UserDetailsImpl implements UserDetails {
     }
 
     public static UserDetailsImpl build(User user) {
-        // Replace Collections.emptyList() with actual authorities if needed
         return new UserDetailsImpl(
-                user.getUserId(),
+                user.getId(),  // Ensure this passes the userId correctly
                 user.getUserName(),
                 user.getEmailId(),
                 user.getUserType(),
                 user.getPassword(),
-                Collections.emptyList() // Adjust if user has authorities
+                Collections.emptyList() // Update if authorities are needed
         );
     }
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

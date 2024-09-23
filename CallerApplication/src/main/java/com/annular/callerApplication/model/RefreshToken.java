@@ -32,5 +32,5 @@ public class RefreshToken {
     private LocalTime expiryToken;
 
     @Field(name = "user_id")
-    private Integer userId;
+    private String userId;
 }

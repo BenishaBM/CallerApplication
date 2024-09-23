@@ -15,4 +15,6 @@ public interface CallerDetailsRepository extends MongoRepository<CallerDetails, 
     @Query("{ 'isActive' : true }")
 	List<CallerDetails> getAllActiveStatus();
 
+	List<CallerDetails> findBySenderNumber(String senderNumber);
+
 }

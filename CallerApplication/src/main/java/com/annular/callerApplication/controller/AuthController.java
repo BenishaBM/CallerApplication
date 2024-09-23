@@ -1,5 +1,6 @@
 package com.annular.callerApplication.controller;
 
+import java.time.LocalTime;
 import java.util.Optional;
 
 
@@ -24,6 +25,7 @@ import com.annular.callerApplication.Security.jwt.JwtUtils;
 import com.annular.callerApplication.Service.AuthenticationService;
 import com.annular.callerApplication.model.RefreshToken;
 import com.annular.callerApplication.model.User;
+import com.annular.callerApplication.repository.RefreshTokenRepository;
 import com.annular.callerApplication.repository.UserRepository;
 import com.annular.callerApplication.webModel.UserWebModel;
 
@@ -43,6 +45,9 @@ public class AuthController {
 
 	@Autowired
 	UserStatusConfig loginConstants;
+	
+	@Autowired
+	RefreshTokenRepository refreshTokenRepository;
 
 	@Autowired
 	AuthenticationManager authenticationManager;
@@ -67,14 +72,14 @@ public class AuthController {
 	            RefreshToken refreshToken = userService.createRefreshToken(userWebModel);
 
 	            User user = checkUsername.get(); // Fetch the user from MongoDB
-             System.out.println(user);
+                System.out.println(user);
 	            String jwt = jwtUtils.generateJwtToken(authentication);
 	            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 	            logger.info("Login Controller ---- Finished");
 
 	            // Ensure userId from MongoDB is included in JwtResponse
 	            return ResponseEntity.ok(new JwtResponse(jwt,
-	                    user.getUserId(), // Use user.getUserId() from MongoDB
+	            		userDetails.getId(), // Use user.getUserId() from MongoDB
 	                    userDetails.getUsername(),
 	                    userDetails.getEmail(),
 	                    1,
@@ -101,6 +106,28 @@ public class AuthController {
 	            e.printStackTrace();
 	        }
 	        return ResponseEntity.ok(new Response(-1, "Fail", ""));
+	    }
+	    
+	    @PostMapping("refreshToken")
+	    public ResponseEntity<?> refreshToken(@RequestBody UserWebModel userWebModel) {
+	        Optional<RefreshToken> data = refreshTokenRepository.findByToken(userWebModel.getToken());
+	        if (data.isPresent()) {
+	            Response token = userService.verifyExpiration(data.get());
+	            Optional<User> userData = userRepository.findById(data.get().getUserId());
+	            String jwt = jwtUtils.generateJwtTokenForRefreshToken(userData.get());
+	            RefreshToken refreshToken = data.get();
+	            refreshToken.setExpiryToken(LocalTime.now().plusMinutes(17));
+	            refreshTokenRepository.save(refreshToken);
+	            return ResponseEntity.ok(new JwtResponse(jwt,
+	                    userData.get().getId(),
+	                    userData.get().getUserName(),
+	                    userData.get().getEmailId(),
+	                    1,
+	                    token.getData().toString(),
+	                    userData.get().getUserType()
+	                   ));
+	        }
+	        return ResponseEntity.badRequest().body(new Response(-1, "Refresh Token Failed", ""));
 	    }
 
 }

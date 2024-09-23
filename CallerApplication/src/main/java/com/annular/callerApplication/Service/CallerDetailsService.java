@@ -13,4 +13,6 @@ public interface CallerDetailsService {
 
 	List<CallerDetails> getAllActiveDetails();
 
+	List<CallerDetails> getAllMobileDetails(String mobileNumber);
+
 }

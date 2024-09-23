@@ -61,7 +61,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         Optional<User> optionalUser = userRepo.findByEmailId(email);
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
-            logger.info("User from DB --> {} -- {} -- {}", user.getUserId(), user.getEmailId(), user.getUserType());
+            logger.info("User from DB --> {} -- {} -- {}", user.getId(), user.getEmailId(), user.getUserType());
             return UserDetailsImpl.build(user);
         } else {
             throw new UsernameNotFoundException("User Not Found with email: " + email);

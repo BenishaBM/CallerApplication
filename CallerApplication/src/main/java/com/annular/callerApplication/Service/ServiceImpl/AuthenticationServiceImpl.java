@@ -41,7 +41,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 //	                refreshTokenData.ifPresent(token -> refreshTokenRepository.delete(token));
 
 			RefreshToken refreshToken = RefreshToken.builder().build();
-			refreshToken.setId(data.map(User::getUserId).orElse(null));
+			refreshToken.setId(data.map(User::getId).orElse(null));
 			refreshToken.setToken(UUID.randomUUID().toString());
 //	                refreshToken.setExpiryToken(LocalTime.now().plusMinutes(45));
 			refreshToken = refreshTokenRepository.save(refreshToken);
@@ -97,4 +97,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 				.body(new Response(1, "User was registered  successfully...", response));
 	}
 
-}
+	@Override
+	public Response verifyExpiration(RefreshToken refreshToken) {
+		// TODO Auto-generated method stub
+	    return new Response(-1, "RefreshToken expired", "");
+	    }
+	}
+
+

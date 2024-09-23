@@ -162,5 +162,15 @@ public class CallerDetailsServiceImpl implements CallerDetailsService {
         }
     }
 
+    @Override
+    public List<CallerDetails> getAllMobileDetails(String senderNumber) {
+        try {
+            List<CallerDetails> callerDetails = callerDetailsRepository.findBySenderNumber(senderNumber);
+            return callerDetails;
+        } catch (Exception e) {
+            throw new RuntimeException("Error fetching caller details: " + e.getMessage());
+        }
+    }
+
 	
 }
