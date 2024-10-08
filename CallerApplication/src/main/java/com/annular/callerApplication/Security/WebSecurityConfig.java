@@ -89,7 +89,7 @@ public class WebSecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:8080", "https://filmhook.annularprojects.com/filmhook-0.1"));
+       // configuration.setAllowedOrigins(List.of("http://localhost:8080", "https://filmhook.annularprojects.com/filmhook-0.1"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

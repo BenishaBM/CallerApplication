@@ -30,7 +30,6 @@ import com.annular.callerApplication.repository.UserRepository;
 import com.annular.callerApplication.webModel.UserWebModel;
 
 
-
 @RestController
 @RequestMapping("/user")
 public class AuthController {
