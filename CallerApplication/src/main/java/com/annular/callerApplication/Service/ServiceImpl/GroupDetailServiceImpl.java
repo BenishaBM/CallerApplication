@@ -59,7 +59,7 @@ public class GroupDetailServiceImpl implements GroupDetailsService {
 	    // Save the Group entity to the database
 	    Group savedGroupDetails = groupRepository.save(groupDetails);
 
-	    // Assuming you have a List of MobileNumberResponse in GroupDetailsWebModel
+	    // Get the list of mobile numbers and mobile numbers with hyphens
 	    List<MobileNumberResponse> mobileNumbers = groupDetailsWebModel.getMobileNumber();
 
 	    // Iterate over mobile numbers and check if they already exist
@@ -75,7 +75,8 @@ public class GroupDetailServiceImpl implements GroupDetailsService {
 
 	        // If the mobile number is unique, save it in the GroupDetails table
 	        GroupDetails callerDetails = new GroupDetails();
-	        callerDetails.setMobileNumbers(mobileNumber);
+	        callerDetails.setMobileNumbers(mobileNumber); // Save the current mobile number
+	        callerDetails.setMobileNumberWithHypens(mobileNumberDTO.getMobileNumberWithHypens()); // Save the corresponding formatted number
 	        callerDetails.setGroupId(savedGroupDetails.getGroupId()); // Set the group ID
 	        callerDetails.setCreatedOn(LocalDateTime.now());
 	        callerDetails.setCreatedBy(groupDetailsWebModel.getCreatedBy());
@@ -87,6 +88,7 @@ public class GroupDetailServiceImpl implements GroupDetailsService {
 	    // Return the saved Group entity
 	    return savedGroupDetails;
 	}
+
 
 	// Method to generate a random 12-character groupCode
 	private String generateGroupCode() {
@@ -230,8 +232,9 @@ public class GroupDetailServiceImpl implements GroupDetailsService {
 	            .map(detail -> {
 	                String mobileNumber = detail.getMobileNumbers(); // Log here
 	                String groupDetailsId = detail.getGroupDetailsId(); // Log here
+	                String mobileNumberWithHypens = detail.getMobileNumberWithHypens();
 	                logger.info("Mapping GroupDetails to MobileNumberResponse - mobileNumber: {}, groupDetailsId: {}", mobileNumber, groupDetailsId);
-	                return new MobileNumberResponse(mobileNumber, groupDetailsId);
+	                return new MobileNumberResponse(mobileNumber, groupDetailsId,mobileNumberWithHypens);
 	            })
 	            .collect(Collectors.toList());
 

@@ -9,6 +9,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.annular.callerApplication.webModel.MobileNumberResponse;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,6 +26,10 @@ public class GroupDetails {
     
     @Field
     private String mobileNumbers;
+    
+    @Field
+    private String mobileNumberWithHypens;
+    
    
     @Field("isActive")
     private String isActive;
@@ -42,5 +48,6 @@ public class GroupDetails {
 
     @Field("updated_by")
     private Integer updatedBy;
+
     
 }

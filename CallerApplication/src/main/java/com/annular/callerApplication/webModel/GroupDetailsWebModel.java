@@ -15,7 +15,9 @@ public class GroupDetailsWebModel {
 
 	private String gropuDetailsId;
 	private Boolean isActive;
+
 	private List<MobileNumberResponse> mobileNumber;
+    private List<MobileNumberResponse>mobileNumberWithHypens;
 	private LocalDateTime createdOn;
 	private LocalDateTime updatedOn;
 	private Integer createdBy;
