@@ -23,4 +23,6 @@ public interface GroupDetailsService {
 
 	Optional<GroupResponse> getGroupCodeByMobileNumber(String mobileNumber);
 
+	Optional<Group> updateGroupCodeByGroupId(String groupId);
+
 }

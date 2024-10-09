@@ -127,5 +127,23 @@ public class GroupDetailsController {
         }
     }
 
+    @PutMapping("/updateGroupCodeByGroupId")
+    public Response updateGroupCodeByGroupId(@RequestParam("groupId") String groupId) {
+        try {
+            Optional<Group> updatedGroupDetails = groupDetailsService.updateGroupCodeByGroupId(groupId);
 
-}
+            if (updatedGroupDetails.isPresent()) {
+                return new Response(0, "Group code updated successfully", updatedGroupDetails.get());
+            } else {
+                return new Response(-1, "Group not found with ID: " + groupId, "");
+            }
+
+        } catch (IllegalArgumentException e) {
+            return new Response(-1, "Error occurred while updating group code: " + e.getMessage(), "");
+        } catch (Exception e) {
+            return new Response(-1, "Unexpected error occurred: " + e.getMessage(), "");
+        }
+    }
+
+    }
+

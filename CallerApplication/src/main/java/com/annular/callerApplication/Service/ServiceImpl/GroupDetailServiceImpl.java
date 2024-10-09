@@ -303,4 +303,28 @@ public class GroupDetailServiceImpl implements GroupDetailsService {
         }
     }
 
+
+	@Override
+    public Optional<Group> updateGroupCodeByGroupId(String groupId) {
+        Optional<Group> groupOptional = groupRepository.findById(groupId);
+
+        if (groupOptional.isPresent()) {
+            Group group = groupOptional.get();
+
+            // Generate a new group code
+            String newGroupCode = generateGroupCode();
+            group.setGroupCode(newGroupCode);
+            group.setUpdatedOn(LocalDateTime.now());
+
+            // Save the updated group entity
+            Group updatedGroup = groupRepository.save(group);
+
+            return Optional.of(updatedGroup);
+        } else {
+            return Optional.empty(); // If group not found
+        }
+    }
+
+  
+
 }
