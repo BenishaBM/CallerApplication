@@ -113,6 +113,7 @@ public class GroupDetailServiceImpl implements GroupDetailsService {
 			groupResponse.setGroupId(group.getGroupId());
 			groupResponse.setGroupName(group.getGroupName());
 			groupResponse.setGroupStatus(group.getIsActive());
+			groupResponse.setGroupCode(group.getGroupCode());
 
 			// 3. Fetch associated mobile numbers for the current group from GroupDetails
 			List<GroupDetails> groupDetailsList = groupDetailRepository.findByGroupId(group.getGroupId());
