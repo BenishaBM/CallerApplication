@@ -11,70 +11,83 @@ import com.annular.callerApplication.Service.CallerDetailsService;
 import com.annular.callerApplication.model.CallerDetails;
 import com.annular.callerApplication.webModel.CallerDetailsWebModel;
 
-
 @RestController
 @RequestMapping("/caller")
 public class CallerDetailsController {
 
-    @Autowired
-    private CallerDetailsService callerDetailsService;
+	@Autowired
+	private CallerDetailsService callerDetailsService;
 
-    @RequestMapping(path = "/save", method = RequestMethod.POST, consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public Response saveCaller(@ModelAttribute CallerDetailsWebModel callerDetailsWebModel) { 
-        try {
-            CallerDetails savedCallerDetails = callerDetailsService.saveCallerDetails(callerDetailsWebModel);
-            return new Response(0, "Caller details saved successfully.","");
-        } catch (IllegalArgumentException e) {
-            return new Response(-1, "Error occurred while saving caller details: " + e.getMessage(),"");
-        } catch (Exception e) {
-            return new Response(-1, "Unexpected error occurred: " + e.getMessage(),"");
-        } 
-    }
+	@RequestMapping(path = "/save", method = RequestMethod.POST, consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
+	public Response saveCaller(@ModelAttribute CallerDetailsWebModel callerDetailsWebModel) {
+		try {
+			CallerDetails savedCallerDetails = callerDetailsService.saveCallerDetails(callerDetailsWebModel);
+			return new Response(0, "Caller details saved successfully.", "");
+		} catch (IllegalArgumentException e) {
+			return new Response(-1, "Error occurred while saving caller details: " + e.getMessage(), "");
+		} catch (Exception e) {
+			return new Response(-1, "Unexpected error occurred: " + e.getMessage(), "");
+		}
+	}
 
-    // GET API to retrieve caller details by ID
-    @RequestMapping(path = "/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public Response getCallerDetails(@PathVariable("id") String id) {
-        try {
-            CallerDetails callerDetails = callerDetailsService.getCallerDetailsById(id);
-            if (callerDetails != null) {
-                return new Response(0, "Caller details retrieved successfully.", callerDetails);
-            } else {
-                return new Response(-1, "Caller details not found.", "");
-            }
-        } catch (Exception e) {
-            return new Response(-1, "Unexpected error occurred: " + e.getMessage(), "");
-        }
-    }
-    
+	// GET API to retrieve caller details by ID
+	@RequestMapping(path = "/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public Response getCallerDetails(@PathVariable("id") String id) {
+		try {
+			CallerDetails callerDetails = callerDetailsService.getCallerDetailsById(id);
+			if (callerDetails != null) {
+				return new Response(0, "Caller details retrieved successfully.", callerDetails);
+			} else {
+				return new Response(-1, "Caller details not found.", "");
+			}
+		} catch (Exception e) {
+			return new Response(-1, "Unexpected error occurred: " + e.getMessage(), "");
+		}
+	}
 
-   @GetMapping("getAllActiveDetails")
-    public Response getAllActiveDetails() {
-        try {
-            List<CallerDetails> callerDetails = callerDetailsService.getAllActiveDetails();
-            if (callerDetails != null) {
-                return new Response(0, "Caller details retrieved successfully.", callerDetails);
-            } else {
-                return new Response(-1, "Caller details not found.", "");
-            }
-        } catch (Exception e) {
-            return new Response(-1, "Unexpected error occurred: " + e.getMessage(), "");
-        }
-    }
-   @GetMapping("getMobileDetails")
-   public Response getAllMobileDetails(@RequestParam String senderNumber) {
-       try {
-           List<CallerDetails> callerDetails = callerDetailsService.getAllMobileDetails(senderNumber);
-           if (callerDetails != null && !callerDetails.isEmpty()) {
-               return new Response(0, "Caller details retrieved successfully.", callerDetails);
-           } else {
-               return new Response(-1, "Caller details not found.", "");
-           }
-       } catch (Exception e) {
-           return new Response(-1, "Unexpected error occurred: " + e.getMessage(), "");
-       }
-   }
+	@GetMapping("getAllActiveDetails")
+	public Response getAllActiveDetails() {
+		try {
+			List<CallerDetails> callerDetails = callerDetailsService.getAllActiveDetails();
+			if (callerDetails != null) {
+				return new Response(0, "Caller details retrieved successfully.", callerDetails);
+			} else {
+				return new Response(-1, "Caller details not found.", "");
+			}
+		} catch (Exception e) {
+			return new Response(-1, "Unexpected error occurred: " + e.getMessage(), "");
+		}
+	}
+
+	@GetMapping("getMobileDetails")
+	public Response getAllMobileDetails(@RequestParam String senderNumber) {
+		try {
+			List<CallerDetails> callerDetails = callerDetailsService.getAllMobileDetails(senderNumber);
+			if (callerDetails != null && !callerDetails.isEmpty()) {
+				return new Response(0, "Caller details retrieved successfully.", callerDetails);
+			} else {
+				return new Response(-1, "Caller details not found.", "");
+			}
+		} catch (Exception e) {
+			return new Response(-1, "Unexpected error occurred: " + e.getMessage(), "");
+		}
+	}
+
+	@GetMapping("getGroupCodeCheck")
+	public Response getGroupCodeCheck(@RequestParam String groupCode) {
+	    try {
+	        // Check if the groupCode exists in the groupTable
+	        boolean exists = callerDetailsService.checkGroupCodeExists(groupCode); // Service method to check existence
+
+	        if (exists) {
+	            return new Response(0, "Success" + groupCode,"Group code exists: " + groupCode);
+	        } else {
+	            return new Response(-1, "fail", "Group code not found: " + groupCode);
+	        }
+	    } catch (Exception e) {
+	        return new Response(-1, "Unexpected error occurred: " + e.getMessage(), "");
+	    }
+	}
+
 
 }
-
-
-

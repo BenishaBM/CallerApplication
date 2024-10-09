@@ -13,7 +13,10 @@ public interface GroupRepository extends MongoRepository<Group, String> {
 
 	void deleteByGroupId(String groupId);
 
-	 @Query("{ 'groupName': ?0 }")
+	@Query("{ 'groupName': ?0 }")
 	Optional<Group> findByGroupName(String groupName);
+
+	@Query(value = "{ 'groupCode' : ?0 }")
+	Optional<Group> findByGroupCode(String groupCode);
 
 }

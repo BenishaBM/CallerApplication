@@ -15,4 +15,6 @@ public interface CallerDetailsService {
 
 	List<CallerDetails> getAllMobileDetails(String mobileNumber);
 
+	boolean checkGroupCodeExists(String groupCode);
+
 }

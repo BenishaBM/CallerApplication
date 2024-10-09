@@ -15,7 +15,7 @@ import com.annular.callerApplication.webModel.NotesWebModel;
 
 @RestController
 @RequestMapping("/notes")
-public class notesController {
+public class NotesController {
 	
 	@Autowired
 	NotesHistoryService notesHistoryServices;
@@ -31,5 +31,7 @@ public class notesController {
             return new Response(-1, "Unexpected error occurred: " + e.getMessage(),"");
         } 
     }
+    
+    
 
 }

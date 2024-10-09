@@ -22,7 +22,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.annular.callerApplication.Service.CallerDetailsService;
 import com.annular.callerApplication.model.CallerDetails;
+import com.annular.callerApplication.model.Group;
 import com.annular.callerApplication.repository.CallerDetailsRepository;
+import com.annular.callerApplication.repository.GroupRepository;
 import com.annular.callerApplication.webModel.CallerDetailsWebModel;
 
 @Service
@@ -30,6 +32,9 @@ public class CallerDetailsServiceImpl implements CallerDetailsService {
 
     @Autowired
     private CallerDetailsRepository callerDetailsRepository;
+    
+    @Autowired
+    GroupRepository groupRepository;
 
     // Method to save audio file and return the file path
     private String saveAudioFile(MultipartFile file) throws IOException {
@@ -170,6 +175,11 @@ public class CallerDetailsServiceImpl implements CallerDetailsService {
         } catch (Exception e) {
             throw new RuntimeException("Error fetching caller details: " + e.getMessage());
         }
+    }
+    public boolean checkGroupCodeExists(String groupCode) {
+        // Check if the group exists by groupCode
+        Optional<Group> group = groupRepository.findByGroupCode(groupCode);
+        return group.isPresent(); // Returns true if exists, false otherwise
     }
 
 	
