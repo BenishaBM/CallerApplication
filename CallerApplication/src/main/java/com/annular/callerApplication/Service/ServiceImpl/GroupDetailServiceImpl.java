@@ -66,12 +66,7 @@ public class GroupDetailServiceImpl implements GroupDetailsService {
 	    for (MobileNumberResponse mobileNumberDTO : mobileNumbers) {
 	        String mobileNumber = mobileNumberDTO.getMobileNumber(); // Get the mobile number from MobileNumberResponse
 
-	        // Check if the mobile number already exists in any group
-	        Optional<GroupDetails> existingGroupDetails = groupDetailRepository.findByMobileNumber(mobileNumber);
 
-	        if (existingGroupDetails.isPresent()) {
-	            throw new RuntimeException("Mobile number " + mobileNumber + " already exists in another group.");
-	        }
 
 	        // If the mobile number is unique, save it in the GroupDetails table
 	        GroupDetails callerDetails = new GroupDetails();
@@ -90,9 +85,9 @@ public class GroupDetailServiceImpl implements GroupDetailsService {
 	}
 
 
-	// Method to generate a random 12-character groupCode
+	// Method to generate a random 12-character alphanumeric string
 	private String generateGroupCode() {
-	    final String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_=+";
+	    final String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"; // Alphanumeric characters
 	    SecureRandom random = new SecureRandom();
 	    StringBuilder sb = new StringBuilder(12);
 	    for (int i = 0; i < 12; i++) {
@@ -101,7 +96,6 @@ public class GroupDetailServiceImpl implements GroupDetailsService {
 	    }
 	    return sb.toString();
 	}
-
 
 	@Override
 	public List<GroupResponse> getAllGroupDetails() {
