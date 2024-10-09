@@ -271,13 +271,13 @@ public class GroupDetailServiceImpl implements GroupDetailsService {
 
     @Override
     public Optional<GroupResponse> getGroupCodeByMobileNumber(String mobileNumber) {
-        // Strip any surrounding quotes
-        mobileNumber = mobileNumber.replaceAll("^\"|\"$", "");
 
+        // Trim and format the mobile number
+        mobileNumber = mobileNumber.trim(); // Remove leading and trailing spaces
         System.out.println("Searching for mobile number: " + mobileNumber);
 
         // Find GroupDetails by mobile number
-        Optional<GroupDetails> groupDetailsOptional = groupDetailRepository.findByMobileNumbers(mobileNumber);
+        Optional<GroupDetails> groupDetailsOptional = groupDetailRepository.findByMobileNumbers(mobileNumber.startsWith("+") ? mobileNumber : "+" + mobileNumber);
 
         if (groupDetailsOptional.isPresent()) {
             GroupDetails groupDetails = groupDetailsOptional.get();
@@ -304,6 +304,5 @@ public class GroupDetailServiceImpl implements GroupDetailsService {
             throw new RuntimeException("No group found for mobile number: " + mobileNumber);
         }
     }
-
 
 }
