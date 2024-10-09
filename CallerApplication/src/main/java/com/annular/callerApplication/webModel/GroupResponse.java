@@ -14,7 +14,14 @@ import lombok.NoArgsConstructor;
 public class GroupResponse {
 	private String groupName;
 	private String groupId;
-    private String groupStatus;
+    private Boolean groupStatus;
     private List<MobileNumberResponse> mobileNumbers;
+    private String groupCode;
+	public  String mobileNumber;
+	
 
-}
+		
+		
+	}
+
+

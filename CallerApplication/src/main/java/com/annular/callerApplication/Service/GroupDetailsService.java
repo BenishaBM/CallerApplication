@@ -21,4 +21,6 @@ public interface GroupDetailsService {
 
 	void deleteGroupDetail(String groupId, String groupDetailsId);
 
+	Optional<GroupResponse> getGroupCodeByMobileNumber(String mobileNumber);
+
 }

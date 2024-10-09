@@ -23,7 +23,7 @@ public class Group {
     private String groupName;
    
     @Field("isActive")
-    private String isActive;
+    private Boolean isActive;
     
     @Field("created_on")
     private LocalDateTime createdOn;
@@ -36,6 +36,9 @@ public class Group {
 
     @Field("updated_by")
     private Integer updatedBy;
+    
+    @Field("groupCode")
+    private String groupCode;
 
 
 }

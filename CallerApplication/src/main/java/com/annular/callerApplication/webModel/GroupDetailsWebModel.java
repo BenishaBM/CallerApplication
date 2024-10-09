@@ -14,13 +14,13 @@ import lombok.NoArgsConstructor;
 public class GroupDetailsWebModel {
 
 	private String gropuDetailsId;
-	private String groupName;
-	private String isActive;
+	private Boolean isActive;
 	private List<MobileNumberResponse> mobileNumber;
 	private LocalDateTime createdOn;
 	private LocalDateTime updatedOn;
 	private Integer createdBy;
 	private Integer updatedBy;
 	private String groupId;
-
+    private String groupCode;
+    private String groupName;
 }

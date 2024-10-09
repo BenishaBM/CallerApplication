@@ -1,5 +1,6 @@
 package com.annular.callerApplication.Service.ServiceImpl;
 
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,14 +40,21 @@ public class GroupDetailServiceImpl implements GroupDetailsService {
 	@Override
 	public Group saveGroupDetails(GroupDetailsWebModel groupDetailsWebModel) {
 
+	    // Check if the group name already exists
+	    Optional<Group> existingGroup = groupRepository.findByGroupName(groupDetailsWebModel.getGroupName());
+	    if (existingGroup.isPresent()) {
+	        throw new RuntimeException("Group name '" + groupDetailsWebModel.getGroupName() + "' already exists.");
+	    }
+
 	    // Create a new Group entity
 	    Group groupDetails = new Group();
 	    groupDetails.setGroupName(groupDetailsWebModel.getGroupName());
-	    groupDetails.setIsActive(groupDetailsWebModel.getIsActive());
+	    groupDetails.setIsActive(true);
 	    groupDetails.setCreatedOn(LocalDateTime.now());
-	    // Uncomment and use this if user details are needed
-	    // UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-	    // groupDetails.setCreatedBy(Integer.parseInt(userDetails.getUsername()));
+
+	    // Generate a unique groupCode
+	    String groupCode = generateGroupCode();
+	    groupDetails.setGroupCode(groupCode);
 
 	    // Save the Group entity to the database
 	    Group savedGroupDetails = groupRepository.save(groupDetails);
@@ -54,9 +62,18 @@ public class GroupDetailServiceImpl implements GroupDetailsService {
 	    // Assuming you have a List of MobileNumberResponse in GroupDetailsWebModel
 	    List<MobileNumberResponse> mobileNumbers = groupDetailsWebModel.getMobileNumber();
 
-	    // Iterate over mobile numbers and save them in the GroupDetails table
+	    // Iterate over mobile numbers and check if they already exist
 	    for (MobileNumberResponse mobileNumberDTO : mobileNumbers) {
 	        String mobileNumber = mobileNumberDTO.getMobileNumber(); // Get the mobile number from MobileNumberResponse
+
+	        // Check if the mobile number already exists in any group
+	        Optional<GroupDetails> existingGroupDetails = groupDetailRepository.findByMobileNumber(mobileNumber);
+
+	        if (existingGroupDetails.isPresent()) {
+	            throw new RuntimeException("Mobile number " + mobileNumber + " already exists in another group.");
+	        }
+
+	        // If the mobile number is unique, save it in the GroupDetails table
 	        GroupDetails callerDetails = new GroupDetails();
 	        callerDetails.setMobileNumbers(mobileNumber);
 	        callerDetails.setGroupId(savedGroupDetails.getGroupId()); // Set the group ID
@@ -70,6 +87,19 @@ public class GroupDetailServiceImpl implements GroupDetailsService {
 	    // Return the saved Group entity
 	    return savedGroupDetails;
 	}
+
+	// Method to generate a random 12-character groupCode
+	private String generateGroupCode() {
+	    final String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_=+";
+	    SecureRandom random = new SecureRandom();
+	    StringBuilder sb = new StringBuilder(12);
+	    for (int i = 0; i < 12; i++) {
+	        int randomIndex = random.nextInt(characters.length());
+	        sb.append(characters.charAt(randomIndex));
+	    }
+	    return sb.toString();
+	}
+
 
 	@Override
 	public List<GroupResponse> getAllGroupDetails() {
@@ -239,5 +269,41 @@ public class GroupDetailServiceImpl implements GroupDetailsService {
         groupDetailRepository.deleteByGroupIdAndGroupDetailsId(groupId, groupDetailsId);
     }
 
-	
+    @Override
+    public Optional<GroupResponse> getGroupCodeByMobileNumber(String mobileNumber) {
+        // Strip any surrounding quotes
+        mobileNumber = mobileNumber.replaceAll("^\"|\"$", "");
+
+        System.out.println("Searching for mobile number: " + mobileNumber);
+
+        // Find GroupDetails by mobile number
+        Optional<GroupDetails> groupDetailsOptional = groupDetailRepository.findByMobileNumbers(mobileNumber);
+
+        if (groupDetailsOptional.isPresent()) {
+            GroupDetails groupDetails = groupDetailsOptional.get();
+            System.out.println("Found GroupDetails: " + groupDetails);
+
+            Optional<Group> groupOptional = groupRepository.findById(groupDetails.getGroupId());
+
+            if (groupOptional.isPresent()) {
+                Group group = groupOptional.get();
+                GroupResponse groupResponse = new GroupResponse();
+                groupResponse.setGroupCode(group.getGroupCode());
+                groupResponse.setGroupName(group.getGroupName());
+                groupResponse.setGroupId(group.getGroupId());
+                groupResponse.setGroupStatus(group.getIsActive()); // or any relevant status field
+                groupResponse.setMobileNumber(groupDetails.getMobileNumbers()); // Assuming you want to include this
+
+                return Optional.of(groupResponse);
+            } else {
+                System.out.println("No group found for the given group ID: " + groupDetails.getGroupId());
+                throw new RuntimeException("Group not found for the given mobile number.");
+            }
+        } else {
+            System.out.println("No GroupDetails found for mobile number: " + mobileNumber);
+            throw new RuntimeException("No group found for mobile number: " + mobileNumber);
+        }
+    }
+
+
 }

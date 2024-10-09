@@ -108,6 +108,24 @@ public class GroupDetailsController {
             return new Response(-1, "Unexpected error occurred: " + e.getMessage(), null);
         }
     }
+    
+    @GetMapping("/getGroupCodeByMobileNumber")
+    public Response getGroupCodeByMobileNumber(@RequestParam("mobileNumber") String mobileNumber) {
+        try {
+            Optional<GroupResponse> savedGroupDetails = groupDetailsService.getGroupCodeByMobileNumber(mobileNumber);
+
+            if (savedGroupDetails.isPresent()) {
+                return new Response(0, "Retrieve data successfully", savedGroupDetails.get());
+            } else {
+                return new Response(-1, "mobileNumber not found with ID: " + mobileNumber, "");
+            }
+
+        } catch (IllegalArgumentException e) {
+            return new Response(-1, "Error occurred while mobileNumber: " + e.getMessage(), "");
+        } catch (Exception e) {
+            return new Response(-1, "Unexpected error occurred: " + e.getMessage(), "");
+        }
     }
 
 
+}

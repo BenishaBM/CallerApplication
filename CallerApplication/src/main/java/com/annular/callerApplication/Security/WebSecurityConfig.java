@@ -76,7 +76,8 @@ public class WebSecurityConfig {
                 .and()
                 .authorizeRequests(
                         (authorize) -> authorize
-                                .antMatchers("/caller/save", "/user/register","/user/login","/caller/getAllActiveDetails","/user/refreshToken")
+                                .antMatchers("/caller/save", "/user/register","/user/login","/caller/getAllActiveDetails","/user/refreshToken",
+                                		"group/getGroupCodeByMobileNumber")
                                 .permitAll()
                                 .anyRequest()
                                 .authenticated()
