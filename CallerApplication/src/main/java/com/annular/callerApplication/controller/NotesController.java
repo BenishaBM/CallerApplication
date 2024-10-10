@@ -1,9 +1,11 @@
 package com.annular.callerApplication.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.annular.callerApplication.Response;
@@ -31,7 +33,25 @@ public class NotesController {
             return new Response(-1, "Unexpected error occurred: " + e.getMessage(),"");
         } 
     }
-    
+    @GetMapping("/getNotes")
+    public Response getNotes(@RequestParam("senderNumber") String senderNumber,
+                             @RequestParam("receiverNumber") String receiverNumber,
+                             @RequestParam("groupCode") String groupCode) {
+        try {
+            // Fetch notes based on senderNumber, receiverNumber, and groupCode
+            NotesHistory notes = notesHistoryServices.getNotes(senderNumber, receiverNumber, groupCode);
+            
+            // Assuming 'notes' contains the fetched data
+            return new Response(0, "Success", notes);
+        } catch (IllegalArgumentException e) {
+            // Handle specific case for invalid arguments
+            return new Response(-1, "Error occurred while fetching notes: " + e.getMessage(), "");
+        } catch (Exception e) {
+            // Handle any unexpected errors
+            return new Response(-1, "Unexpected error occurred: " + e.getMessage(), "");
+        }
+    }
+
     
 
 }

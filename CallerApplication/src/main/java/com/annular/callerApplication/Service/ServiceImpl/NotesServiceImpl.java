@@ -1,6 +1,7 @@
 package com.annular.callerApplication.Service.ServiceImpl;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,4 +44,18 @@ public class NotesServiceImpl implements NotesHistoryService{
 	    return savedNotesHistory;
 	}
 
+	  @Override
+	    public NotesHistory getNotes(String senderNumber, String receiverNumber, String groupCode) {
+	        // Fetch the latest note for the given groupCode and receiverNumber
+	        Optional<NotesHistory> notesHistoryOptional = notesHistoryRepository
+	                .findFirstByGroupCodeAndReceiverNumberOrderByUpdatedOnDesc(groupCode, receiverNumber);
+
+	        // Check if a note was found, otherwise throw an exception or return null
+	        if (notesHistoryOptional.isPresent()) {
+	            return notesHistoryOptional.get();
+	        } else {
+	            // You can throw an exception here or handle the case when no notes are found
+	            throw new IllegalArgumentException("No notes found for the given groupCode and receiverNumber.");
+	        }
+	    }
 }

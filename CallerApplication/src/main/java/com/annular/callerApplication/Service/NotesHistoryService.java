@@ -7,4 +7,6 @@ public interface NotesHistoryService {
 
 	NotesHistory saveNotes(NotesWebModel notesHistoryWebModel);
 
+	NotesHistory getNotes(String senderNumber, String receiverNumber, String groupCode);
+
 }
