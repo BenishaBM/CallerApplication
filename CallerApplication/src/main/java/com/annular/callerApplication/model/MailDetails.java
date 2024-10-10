@@ -37,6 +37,16 @@ public class MailDetails {
 	@Field("updated_by")
 	private Integer updatedBy;
 
+	@Field("quotationData")
+	private String quotationData;
+	
+	@Field("addressDetails")
+	private String addressDetails;
 
+	@Field("nameData")
+	private String nameData;
+	
+	@Field("phoneNumber")
+	private String phoneNumber;
 
 }

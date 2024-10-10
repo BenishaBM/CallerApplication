@@ -2,6 +2,8 @@ package com.annular.callerApplication.webModel;
 
 import java.time.LocalDateTime;
 
+import org.springframework.data.mongodb.core.mapping.Field;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,6 +24,10 @@ public class MailDetailsWebModel {
 	private LocalDateTime updatedOn;
 	private Integer createdBy;
 	private Integer updatedBy;
+	private String quotationData;
+	private String addressDetails;
+	private String nameData;
+	private String phoneNumber;
 
 
 }
