@@ -28,6 +28,11 @@ public class MailServiceImpl implements MailService {
 	    mailDetails.setUpdatedOn(LocalDateTime.now()); // Set updatedOn to the current time
 //	    mailDetails.setCreatedBy(mailDetailsWebModel.getCreatedBy());
 //	    mailDetails.setUpdatedBy(mailDetailsWebModel.getUpdatedBy());
+	    mailDetails.setQuotationData(mailDetailsWebModel.getQuotationData());
+	    mailDetailsWebModel.setAddressDetails(mailDetailsWebModel.getQuotationData());
+	    mailDetailsWebModel.setPhoneNumber(mailDetailsWebModel.getPhoneNumber());
+	    mailDetailsWebModel.setNameData(mailDetailsWebModel.getNameData());
+
 	    
 	    // Save the MailDetails object into MongoDB (assuming mailDetailsRepository is a MongoRepository)
 	    return mailDetailsRepository.save(mailDetails);
