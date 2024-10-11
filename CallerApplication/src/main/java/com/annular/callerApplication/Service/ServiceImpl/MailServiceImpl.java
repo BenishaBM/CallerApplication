@@ -26,17 +26,23 @@ public class MailServiceImpl implements MailService {
 	    mailDetails.setIsActive(true);
 	    mailDetails.setCreatedOn(LocalDateTime.now()); // Set createdOn to the current time
 	    mailDetails.setUpdatedOn(LocalDateTime.now()); // Set updatedOn to the current time
-//	    mailDetails.setCreatedBy(mailDetailsWebModel.getCreatedBy());
-//	    mailDetails.setUpdatedBy(mailDetailsWebModel.getUpdatedBy());
-	    mailDetails.setQuotationData(mailDetailsWebModel.getQuotationData());
-	    mailDetailsWebModel.setAddressDetails(mailDetailsWebModel.getQuotationData());
-	    mailDetailsWebModel.setPhoneNumber(mailDetailsWebModel.getPhoneNumber());
-	    mailDetailsWebModel.setNameData(mailDetailsWebModel.getNameData());
 
-	    
-	    // Save the MailDetails object into MongoDB (assuming mailDetailsRepository is a MongoRepository)
+	    // Set createdBy and updatedBy fields if they exist in mailDetailsWebModel
+	    mailDetails.setCreatedBy(mailDetailsWebModel.getCreatedBy());
+	    mailDetails.setUpdatedBy(mailDetailsWebModel.getUpdatedBy());
+
+	    // Map additional fields from MailDetailsWebModel to MailDetails
+	    mailDetails.setQuotationData(mailDetailsWebModel.getQuotationData());
+	    mailDetails.setAddressDetails(mailDetailsWebModel.getAddressDetails()); // Ensure this field is mapped
+	    mailDetails.setPhoneNumber(mailDetailsWebModel.getPhoneNumber()); // Ensure this field is mapped
+	    mailDetails.setNameData(mailDetailsWebModel.getNameData()); // Ensure this field is mapped
+
+	    // Print debug information (optional)
+	    System.out.println("Phone Number: " + mailDetailsWebModel.getPhoneNumber());
+	    System.out.println("Name Data: " + mailDetailsWebModel.getNameData());
+
+	    // Save the MailDetails object into MongoDB
 	    return mailDetailsRepository.save(mailDetails);
 	}
-
 
 }
