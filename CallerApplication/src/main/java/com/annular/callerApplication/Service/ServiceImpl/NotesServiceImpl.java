@@ -121,4 +121,34 @@ public class NotesServiceImpl implements NotesHistoryService{
 	      return responseList;
 	  }
 
+	  @Override
+	  public List<NotesHistory> getNotesBySenderNumberAndReceiverNumbers(String senderNumber, String receiverNumber) {
+	      // Trim the input parameters to remove any leading/trailing whitespace
+	      senderNumber = senderNumber.trim();
+	      receiverNumber = receiverNumber.trim();
+	      
+	      // Normalize the senderNumber and receiverNumber to handle cases with and without +
+	      if (!senderNumber.startsWith("+")) {
+	          senderNumber = "+" + senderNumber; // Ensure it starts with +
+	      }
+	      if (!receiverNumber.startsWith("+")) {
+	          receiverNumber = "+" + receiverNumber; // Ensure it starts with +
+	      }
+
+	      logger.info("Fetching notes for sender: {} and receiver: {}", senderNumber, receiverNumber);
+
+	      // Fetch the list of notes from the repository using the sender and receiver numbers
+	      List<NotesHistory> notesHistoryList = notesHistoryRepository.findBySenderNumberAndReceiverNumber(senderNumber, receiverNumber);
+
+	      // Check if the list is empty
+	      if (notesHistoryList.isEmpty()) {
+	          logger.warn("No notes found for sender: {} and receiver: {}", senderNumber, receiverNumber);
+	      } else {
+	          logger.debug("Notes retrieved: {}", notesHistoryList);
+	      }
+
+	      // Return the list of fetched NotesHistory objects
+	      return notesHistoryList;
+	  }
+
 }

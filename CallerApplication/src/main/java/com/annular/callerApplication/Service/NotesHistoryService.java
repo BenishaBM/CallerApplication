@@ -14,4 +14,6 @@ public interface NotesHistoryService {
 
 	List<Map<String, String>> getNumberBySenderNumber(String senderNumber);
 
+	List<NotesHistory> getNotesBySenderNumberAndReceiverNumbers(String senderNumber, String receiverNumber);
+
 }

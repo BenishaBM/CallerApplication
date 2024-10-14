@@ -77,5 +77,26 @@ public class NotesController {
         }
     }
 
+    @GetMapping("/getNotesBySenderNumberAndReceiverNumber")
+    public Response getNotesBySenderNumberAndReceiverNumber(@RequestParam("senderNumber") String senderNumber,
+                                 @RequestParam("receiverNumber") String receiverNumber) {
+        try {
+            // Fetch notes based on senderNumber and receiverNumber
+            List<NotesHistory> notes = notesHistoryServices.getNotesBySenderNumberAndReceiverNumbers(senderNumber, receiverNumber);
+            
+            if (notes.isEmpty()) {
+                return new Response(0, "No notes found for the provided sender and receiver numbers", notes);
+            }
+
+            // Assuming 'notes' contains the fetched data
+            return new Response(0, "Success", notes);
+        } catch (IllegalArgumentException e) {
+            // Handle specific case for invalid arguments
+            return new Response(-1, "Error occurred while fetching notes: " + e.getMessage(), "");
+        } catch (Exception e) {
+            // Handle any unexpected errors
+            return new Response(-1, "Unexpected error occurred: " + e.getMessage(), "");
+        }
+    }
 
 }

@@ -22,4 +22,5 @@ public interface NotesHistoryRepository extends MongoRepository<NotesHistory, St
 
     List<NotesHistory> findBySenderNumber(String senderNumber);
 
+    List<NotesHistory> findBySenderNumberAndReceiverNumber(String senderNumber, String receiverNumber);
 }
