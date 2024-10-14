@@ -1,5 +1,8 @@
 package com.annular.callerApplication.controller;
 
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -52,6 +55,27 @@ public class NotesController {
         }
     }
 
-    
+    @GetMapping("/getNumberBySenderNumber")
+    public Response getNumberBySenderNumber(@RequestParam("senderNumber") String senderNumber) {
+        try {
+            // Fetch notes history by sender number
+            List<Map<String, String>> notes = notesHistoryServices.getNumberBySenderNumber(senderNumber);
+
+            if (notes != null) {
+                // If notes are found, return success response
+                return new Response(1, "Success", notes);
+            } else {
+                // If no notes are found, return a message indicating no data found
+                return new Response(0, "Fail", "No notes found for the provided sender number");
+            }
+        } catch (IllegalArgumentException e) {
+            // Handle specific case for invalid arguments
+            return new Response(-1, "Error occurred while fetching notes: " + e.getMessage(), null);
+        } catch (Exception e) {
+            // Handle any unexpected errors
+            return new Response(-1, "Unexpected error occurred: " + e.getMessage(), null);
+        }
+    }
+
 
 }

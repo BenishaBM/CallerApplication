@@ -1,8 +1,18 @@
 package com.annular.callerApplication.Service.ServiceImpl;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +26,10 @@ public class NotesServiceImpl implements NotesHistoryService{
 	
 	@Autowired
 	NotesHistoryRepository notesHistoryRepository;
+	
+
+	public static final Logger logger = LoggerFactory.getLogger(NotesServiceImpl.class);
+	
 
 	@Override
 	public NotesHistory saveNotes(NotesWebModel notesHistoryWebModel) {
@@ -58,4 +72,53 @@ public class NotesServiceImpl implements NotesHistoryService{
 	            throw new IllegalArgumentException("No notes found for the given groupCode and receiverNumber.");
 	        }
 	    }
+	  @Override
+	  public List<Map<String, String>> getNumberBySenderNumber(String senderNumber) {
+	      // Trim the senderNumber to remove any leading/trailing whitespace
+	      senderNumber = senderNumber.trim();
+	      logger.info("Fetching receiver numbers for sender: {}", senderNumber);
+
+	      // Normalize the senderNumber to handle cases with and without +
+	      if (senderNumber.startsWith("%2B")) {
+	          senderNumber = senderNumber.replace("%2B", "+"); // Decode %2B to +
+	      } else if (!senderNumber.startsWith("+")) {
+	          senderNumber = "+" + senderNumber; // Ensure it starts with +
+	      }
+
+	      // Fetching notes history by sender number
+	      List<NotesHistory> notesList = notesHistoryRepository.findBySenderNumber(senderNumber);
+	      logger.debug("Notes list retrieved: {}", notesList);
+
+	      // Using a HashMap to hold notes history ID and receiver number
+	      Map<String, String> receiverMap = new HashMap<>();
+
+	      // Check if the list is not empty
+	      if (!notesList.isEmpty()) {
+	          for (NotesHistory note : notesList) {
+	              String notesHistoryId = note.getNotesHistoryId();
+	              String receiverNumber = note.getReceiverNumber();
+
+	              // Only add to map if the receiverNumber is not null or empty
+	              if (receiverNumber != null && !receiverNumber.isEmpty()) {
+	                  receiverMap.put(notesHistoryId, receiverNumber);
+	              }
+	          }
+	      } else {
+	          logger.warn("No notes found for sender: {}", senderNumber);
+	      }
+
+	      // Convert the HashMap to a List of Maps to return
+	      List<Map<String, String>> responseList = receiverMap.entrySet().stream()
+	              .map(entry -> {
+	                  Map<String, String> map = new HashMap<>();
+	                  map.put("notesHistoryId", entry.getKey());
+	                  map.put("receiverNumber", entry.getValue());
+	                  return map;
+	              })
+	              .collect(Collectors.toList());
+
+	      // Return the list of Maps containing notesHistoryId and receiverNumber
+	      return responseList;
+	  }
+
 }

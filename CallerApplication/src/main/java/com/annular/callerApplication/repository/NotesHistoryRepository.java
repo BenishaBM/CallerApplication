@@ -1,5 +1,6 @@
 package com.annular.callerApplication.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -16,5 +17,9 @@ public interface NotesHistoryRepository extends MongoRepository<NotesHistory, St
     @Query("{ 'groupCode': ?0, 'receiverNumber': ?1 }")
 	Optional<NotesHistory> findFirstByGroupCodeAndReceiverNumberOrderByUpdatedOnDesc(String groupCode,
 			String receiverNumber);
+
+    // Existing query method
+
+    List<NotesHistory> findBySenderNumber(String senderNumber);
 
 }
