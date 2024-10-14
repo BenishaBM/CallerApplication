@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.annular.callerApplication.Service.MailService;
@@ -48,7 +49,6 @@ public class MailServiceImpl implements MailService {
 
 	@Override
 	public List<MailDetails> getAllMail() {
-	    return mailDetailsRepository.findAll();
+	    return mailDetailsRepository.findAll(Sort.by(Sort.Direction.DESC, "mailDetailsId"));
 	}
-
 }
