@@ -1,6 +1,9 @@
 package com.annular.callerApplication.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,4 +35,17 @@ public class MailDetailController {
         } 
     }
 
+    @GetMapping("/getAllMail")
+    public Response getAllMail() {
+        try {
+            List<MailDetails> mailDetailsList = mailService.getAllMail();
+            return new Response(1, "success", mailDetailsList);
+        } catch (IllegalArgumentException e) {
+            return new Response(-1, "Error occurred while fetching mail: " + e.getMessage(), null);
+        } catch (Exception e) {
+            return new Response(-1, "Unexpected error occurred: " + e.getMessage(), null);
+        }
+    }
+
 }
+

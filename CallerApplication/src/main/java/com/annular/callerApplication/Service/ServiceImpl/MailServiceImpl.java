@@ -1,6 +1,7 @@
 package com.annular.callerApplication.Service.ServiceImpl;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,6 +44,11 @@ public class MailServiceImpl implements MailService {
 
 	    // Save the MailDetails object into MongoDB
 	    return mailDetailsRepository.save(mailDetails);
+	}
+
+	@Override
+	public List<MailDetails> getAllMail() {
+	    return mailDetailsRepository.findAll();
 	}
 
 }

@@ -125,6 +125,7 @@ public class GroupDetailServiceImpl implements GroupDetailsService {
 				mobileNumberResponse.setMobileNumber(details.getMobileNumbers());
 				mobileNumberResponse.setGroupDetailsId(details.getGroupDetailsId());
 				mobileNumberResponse.setMobileNumberWithHypens(details.getMobileNumberWithHypens());
+
 				mobileNumbers.add(mobileNumberResponse);
 			}
 
