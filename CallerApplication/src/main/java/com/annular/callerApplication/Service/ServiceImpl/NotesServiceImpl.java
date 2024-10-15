@@ -91,6 +91,7 @@ public class NotesServiceImpl implements NotesHistoryService{
 
 	      // Using a HashMap to hold notes history ID and receiver number
 	      Map<String, String> receiverMap = new HashMap<>();
+	      Set<String> uniqueReceiverNumbers = new HashSet<>();
 
 	      // Check if the list is not empty
 	      if (!notesList.isEmpty()) {
@@ -98,15 +99,14 @@ public class NotesServiceImpl implements NotesHistoryService{
 	              String notesHistoryId = note.getNotesHistoryId();
 	              String receiverNumber = note.getReceiverNumber();
 
-	              // Only add to map if the receiverNumber is not null or empty
-	              if (receiverNumber != null && !receiverNumber.isEmpty()) {
+	              // Only add to map if the receiverNumber is not null or empty and is unique
+	              if (receiverNumber != null && !receiverNumber.isEmpty() && uniqueReceiverNumbers.add(receiverNumber)) {
 	                  receiverMap.put(notesHistoryId, receiverNumber);
 	              }
 	          }
 	      } else {
 	          logger.warn("No notes found for sender: {}", senderNumber);
 	      }
-
 	      // Convert the HashMap to a List of Maps to return
 	      List<Map<String, String>> responseList = receiverMap.entrySet().stream()
 	              .map(entry -> {
