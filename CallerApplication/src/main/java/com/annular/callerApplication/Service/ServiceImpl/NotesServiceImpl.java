@@ -60,7 +60,22 @@ public class NotesServiceImpl implements NotesHistoryService{
 
 	  @Override
 	    public NotesHistory getNotes(String senderNumber, String receiverNumber, String groupCode) {
-	        // Fetch the latest note for the given groupCode and receiverNumber
+	        // Fetch the latest note for the given groupCode and 
+		  senderNumber = senderNumber.trim();
+	      receiverNumber = receiverNumber.trim();
+	      
+	      // Normalize the senderNumber and receiverNumber to handle cases with and without +
+	      if (!senderNumber.startsWith("+")) {
+	          senderNumber = "+" + senderNumber; // Ensure it starts with +
+	      }
+	      if (!receiverNumber.startsWith("+")) {
+	          receiverNumber = "+" + receiverNumber; // Ensure it starts with +
+	      }
+
+	      logger.info("Fetching notes for sender: {} and receiver: {}", senderNumber, receiverNumber);
+
+	     
+
 	        Optional<NotesHistory> notesHistoryOptional = notesHistoryRepository
 	                .findFirstByGroupCodeAndReceiverNumberOrderByUpdatedOnDesc(groupCode, receiverNumber);
 
