@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.annular.callerApplication.model.NotesHistory;
@@ -24,5 +25,11 @@ public interface NotesHistoryRepository extends MongoRepository<NotesHistory, St
 
     List<NotesHistory> findBySenderNumberAndReceiverNumber(String senderNumber, String receiverNumber);
 
-	List<NotesHistory> findByGroupCodeAndReceiverNumberOrderByUpdatedOnDesc(String groupCode, String receiverNumber);
+    @Query("SELECT nh FROM NotesHistory nh WHERE nh.groupCode = :groupCode AND nh.receiverNumber = :receiverNumber ORDER BY nh.createdOn DESC")
+    List<NotesHistory> findByGroupCodeAndReceiverNumberOrderByUpdatedOnDesc(
+        @Param("groupCode") String groupCode, 
+        @Param("receiverNumber") String receiverNumber
+    );
+
+	//List<NotesHistory> findByGroupCodeAndReceiverNumberOrderByUpdatedOnDesc(String groupCode, String receiverNumber);
 }

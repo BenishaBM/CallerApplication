@@ -60,10 +60,10 @@ public class NotesServiceImpl implements NotesHistoryService{
 
 	@Override
 	public NotesHistory getNotes(String senderNumber, String receiverNumber, String groupCode) {
-	    // Trim and normalize sender and receiver numbers
+	    // Normalize sender and receiver numbers
 	    senderNumber = senderNumber.trim();
 	    receiverNumber = receiverNumber.trim();
-
+	    
 	    if (!senderNumber.startsWith("+")) {
 	        senderNumber = "+" + senderNumber;
 	    }
@@ -73,19 +73,19 @@ public class NotesServiceImpl implements NotesHistoryService{
 
 	    logger.info("Fetching notes for sender: {} and receiver: {}", senderNumber, receiverNumber);
 
-	    // Fetching the latest note
+	    // Fetch the latest note
 	    List<NotesHistory> notesHistoryList = notesHistoryRepository
 	            .findByGroupCodeAndReceiverNumberOrderByUpdatedOnDesc(groupCode, receiverNumber);
+	    System.out.println(notesHistoryList);
 
-	    // Check if any notes were found
+	    // Return the latest note (first in the list)
 	    if (notesHistoryList != null && !notesHistoryList.isEmpty()) {
-	        // Return the first (latest) note from the sorted list
-	        return notesHistoryList.get(0);
+	        return notesHistoryList.get(0); // The latest note is the first due to the DESC order
 	    } else {
-	        // Handle the case when no notes are found
 	        throw new IllegalArgumentException("No notes found for the given groupCode and receiverNumber.");
 	    }
 	}
+
 
 	  @Override
 	  public List<Map<String, String>> getNumberBySenderNumber(String senderNumber) {
