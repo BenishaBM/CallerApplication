@@ -14,13 +14,15 @@ public interface NotesHistoryRepository extends MongoRepository<NotesHistory, St
 
 	NotesHistory save(NotesHistory notesHistory);
 
-    @Query("{ 'groupCode': ?0, 'receiverNumber': ?1 }")
-	Optional<NotesHistory> findFirstByGroupCodeAndReceiverNumberOrderByUpdatedOnDesc(String groupCode,
-			String receiverNumber);
+//    @Query("{ 'groupCode': ?0, 'receiverNumber': ?1 }")
+//	Optional<NotesHistory> findFirstByGroupCodeAndReceiverNumberOrderByUpdatedOnDesc(String groupCode,
+//			String receiverNumber);
 
     // Existing query method
 
     List<NotesHistory> findBySenderNumber(String senderNumber);
 
     List<NotesHistory> findBySenderNumberAndReceiverNumber(String senderNumber, String receiverNumber);
+
+	List<NotesHistory> findByGroupCodeAndReceiverNumberOrderByUpdatedOnDesc(String groupCode, String receiverNumber);
 }
