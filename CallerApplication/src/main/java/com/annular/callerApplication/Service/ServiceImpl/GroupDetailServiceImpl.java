@@ -173,10 +173,86 @@ public class GroupDetailServiceImpl implements GroupDetailsService {
 
 		return Optional.of(groupResponse);
 	}
+//	@Override
+//	public GroupResponse updateGroupDetailsById(GroupDetailsWebModel groupDetailsWebModel) {
+//	    Logger logger = LoggerFactory.getLogger(getClass());
+//	    
+//	    logger.info("Starting update for groupId: {}", groupDetailsWebModel.getGroupId());
+//
+//	    Optional<Group> existingGroupOpt = groupRepository.findById(groupDetailsWebModel.getGroupId());
+//
+//	    if (existingGroupOpt.isPresent()) {
+//	        Group existingGroup = existingGroupOpt.get();
+//	        existingGroup.setGroupName(groupDetailsWebModel.getGroupName());
+//	        existingGroup.setIsActive(groupDetailsWebModel.getIsActive());
+//	        existingGroup.setUpdatedOn(LocalDateTime.now());
+//	        existingGroup.setUpdatedBy(groupDetailsWebModel.getUpdatedBy());
+//	        groupRepository.save(existingGroup);
+//
+//	        List<GroupDetails> existingGroupDetails = groupDetailRepository.findByGroupId(groupDetailsWebModel.getGroupId());
+//	        Map<String, GroupDetails> existingDetailsMap = existingGroupDetails.stream()
+//	                .collect(Collectors.toMap(GroupDetails::getGroupDetailsId, Function.identity()));
+//
+//	        logger.info("Existing Group Details: {}", existingDetailsMap);
+//
+//	        for (MobileNumberResponse mobileNumberDTO : groupDetailsWebModel.getMobileNumber()) {
+//	            String mobileNumber = mobileNumberDTO.getMobileNumber(); // Log here
+//	            String groupDetailsId = mobileNumberDTO.getGroupDetailsId(); // Log here
+//
+//	            logger.info("Processing MobileNumberResponse - mobileNumber: {}, groupDetailsId: {}", mobileNumber, groupDetailsId);
+//
+//	            if (groupDetailsId != null) {
+//	                GroupDetails existingDetail = existingDetailsMap.get(groupDetailsId);
+//	                if (existingDetail != null) {
+//	                    logger.info("Found existing GroupDetails with ID: {}", groupDetailsId);
+//	                    existingDetail.setMobileNumbers(mobileNumber);
+//	                    existingDetail.setUpdatedOn(LocalDateTime.now());
+//	                    existingDetail.setUpdatedBy(groupDetailsWebModel.getUpdatedBy());
+//	                    groupDetailRepository.save(existingDetail);
+//	                    logger.info("Updated existing GroupDetails - groupDetailsId: {}, mobileNumber: {}", groupDetailsId, mobileNumber);
+//	                } else {
+//	                    logger.warn("GroupDetails with ID {} not found for update", groupDetailsId);
+//	                }
+//	            } else {
+//	                logger.info("Creating new GroupDetails with mobileNumber: {}", mobileNumber);
+//	                GroupDetails newGroupDetails = new GroupDetails();
+//	                newGroupDetails.setMobileNumbers(mobileNumber);
+//	                newGroupDetails.setGroupId(existingGroup.getGroupId());
+//	                newGroupDetails.setCreatedOn(LocalDateTime.now());
+//	                newGroupDetails.setCreatedBy(groupDetailsWebModel.getCreatedBy());
+//	                groupDetailRepository.save(newGroupDetails);
+//	                logger.info("Created new GroupDetails with mobileNumber: {}", mobileNumber);
+//	            }
+//	        }
+//
+//	        List<MobileNumberResponse> mobileNumberResponses = existingGroupDetails.stream()
+//	            .map(detail -> {
+//	                String mobileNumber = detail.getMobileNumbers(); // Log here
+//	                String groupDetailsId = detail.getGroupDetailsId(); // Log here
+//	                String mobileNumberWithHypens = detail.getMobileNumberWithHypens();
+//	                logger.info("Mapping GroupDetails to MobileNumberResponse - mobileNumber: {}, groupDetailsId: {}", mobileNumber, groupDetailsId);
+//	                return new MobileNumberResponse(mobileNumber, groupDetailsId,mobileNumberWithHypens);
+//	            })
+//	            .collect(Collectors.toList());
+//
+//	        GroupResponse groupResponse = new GroupResponse();
+//	        groupResponse.setGroupId(existingGroup.getGroupId());
+//	        groupResponse.setGroupName(existingGroup.getGroupName());
+//	        groupResponse.setGroupStatus(existingGroup.getIsActive());
+//	        groupResponse.setMobileNumbers(mobileNumberResponses);
+//
+//	        logger.info("Update successful for groupId: {}", existingGroup.getGroupId());
+//	        return groupResponse;
+//	    } else {
+//	        throw new IllegalArgumentException("Group with ID " + groupDetailsWebModel.getGroupId() + " does not exist.");
+//	    }
+//	}
+//
+//
 	@Override
 	public GroupResponse updateGroupDetailsById(GroupDetailsWebModel groupDetailsWebModel) {
 	    Logger logger = LoggerFactory.getLogger(getClass());
-	    
+
 	    logger.info("Starting update for groupId: {}", groupDetailsWebModel.getGroupId());
 
 	    Optional<Group> existingGroupOpt = groupRepository.findById(groupDetailsWebModel.getGroupId());
@@ -189,50 +265,39 @@ public class GroupDetailServiceImpl implements GroupDetailsService {
 	        existingGroup.setUpdatedBy(groupDetailsWebModel.getUpdatedBy());
 	        groupRepository.save(existingGroup);
 
+	        // Handle group details
 	        List<GroupDetails> existingGroupDetails = groupDetailRepository.findByGroupId(groupDetailsWebModel.getGroupId());
 	        Map<String, GroupDetails> existingDetailsMap = existingGroupDetails.stream()
 	                .collect(Collectors.toMap(GroupDetails::getGroupDetailsId, Function.identity()));
 
-	        logger.info("Existing Group Details: {}", existingDetailsMap);
-
 	        for (MobileNumberResponse mobileNumberDTO : groupDetailsWebModel.getMobileNumber()) {
-	            String mobileNumber = mobileNumberDTO.getMobileNumber(); // Log here
-	            String groupDetailsId = mobileNumberDTO.getGroupDetailsId(); // Log here
-
-	            logger.info("Processing MobileNumberResponse - mobileNumber: {}, groupDetailsId: {}", mobileNumber, groupDetailsId);
+	            String mobileNumber = mobileNumberDTO.getMobileNumber();
+	            String groupDetailsId = mobileNumberDTO.getGroupDetailsId();
 
 	            if (groupDetailsId != null) {
 	                GroupDetails existingDetail = existingDetailsMap.get(groupDetailsId);
 	                if (existingDetail != null) {
-	                    logger.info("Found existing GroupDetails with ID: {}", groupDetailsId);
 	                    existingDetail.setMobileNumbers(mobileNumber);
 	                    existingDetail.setUpdatedOn(LocalDateTime.now());
 	                    existingDetail.setUpdatedBy(groupDetailsWebModel.getUpdatedBy());
 	                    groupDetailRepository.save(existingDetail);
-	                    logger.info("Updated existing GroupDetails - groupDetailsId: {}, mobileNumber: {}", groupDetailsId, mobileNumber);
-	                } else {
-	                    logger.warn("GroupDetails with ID {} not found for update", groupDetailsId);
 	                }
 	            } else {
-	                logger.info("Creating new GroupDetails with mobileNumber: {}", mobileNumber);
 	                GroupDetails newGroupDetails = new GroupDetails();
 	                newGroupDetails.setMobileNumbers(mobileNumber);
 	                newGroupDetails.setGroupId(existingGroup.getGroupId());
 	                newGroupDetails.setCreatedOn(LocalDateTime.now());
 	                newGroupDetails.setCreatedBy(groupDetailsWebModel.getCreatedBy());
 	                groupDetailRepository.save(newGroupDetails);
-	                logger.info("Created new GroupDetails with mobileNumber: {}", mobileNumber);
 	            }
 	        }
 
+	        // Fetch the group code from the group
+	        String groupCode = existingGroup.getGroupCode();  // Ensure this retrieves the correct groupCode
+
+	        // Prepare the response
 	        List<MobileNumberResponse> mobileNumberResponses = existingGroupDetails.stream()
-	            .map(detail -> {
-	                String mobileNumber = detail.getMobileNumbers(); // Log here
-	                String groupDetailsId = detail.getGroupDetailsId(); // Log here
-	                String mobileNumberWithHypens = detail.getMobileNumberWithHypens();
-	                logger.info("Mapping GroupDetails to MobileNumberResponse - mobileNumber: {}, groupDetailsId: {}", mobileNumber, groupDetailsId);
-	                return new MobileNumberResponse(mobileNumber, groupDetailsId,mobileNumberWithHypens);
-	            })
+	            .map(detail -> new MobileNumberResponse(detail.getMobileNumbers(), detail.getGroupDetailsId(), detail.getMobileNumberWithHypens()))
 	            .collect(Collectors.toList());
 
 	        GroupResponse groupResponse = new GroupResponse();
@@ -241,14 +306,17 @@ public class GroupDetailServiceImpl implements GroupDetailsService {
 	        groupResponse.setGroupStatus(existingGroup.getIsActive());
 	        groupResponse.setMobileNumbers(mobileNumberResponses);
 
+	        // Include groupCode only if it is not null
+	        if (groupCode != null && !groupCode.isEmpty()) {
+	            groupResponse.setGroupCode(groupCode);
+	        }
+
 	        logger.info("Update successful for groupId: {}", existingGroup.getGroupId());
 	        return groupResponse;
 	    } else {
 	        throw new IllegalArgumentException("Group with ID " + groupDetailsWebModel.getGroupId() + " does not exist.");
 	    }
 	}
-
-
 
     public void deleteGroupAndDetails(String groupId) {
         // Check if group exists in the Group collection
