@@ -17,7 +17,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.annular.callerApplication.Service.NotesHistoryService;
+import com.annular.callerApplication.model.Group;
+import com.annular.callerApplication.model.GroupDetails;
 import com.annular.callerApplication.model.NotesHistory;
+import com.annular.callerApplication.repository.GroupDetailRepository;
+import com.annular.callerApplication.repository.GroupRepository;
 import com.annular.callerApplication.repository.NotesHistoryRepository;
 import com.annular.callerApplication.webModel.NotesWebModel;
 
@@ -26,6 +30,12 @@ public class NotesServiceImpl implements NotesHistoryService{
 	
 	@Autowired
 	NotesHistoryRepository notesHistoryRepository;
+	
+	@Autowired
+	GroupRepository groupRepository;
+	
+	@Autowired
+	GroupDetailRepository groupDetailsRepository;
 	
 
 	public static final Logger logger = LoggerFactory.getLogger(NotesServiceImpl.class);
@@ -58,6 +68,33 @@ public class NotesServiceImpl implements NotesHistoryService{
 	    return savedNotesHistory;
 	}
 
+//	@Override
+//	public NotesHistory getNotes(String senderNumber, String receiverNumber, String groupCode) {
+//	    // Normalize sender and receiver numbers
+//	    senderNumber = senderNumber.trim();
+//	    receiverNumber = receiverNumber.trim();
+//	    
+//	    if (!senderNumber.startsWith("+")) {
+//	        senderNumber = "+" + senderNumber;
+//	    }
+//	    if (!receiverNumber.startsWith("+")) {
+//	        receiverNumber = "+" + receiverNumber;
+//	    }
+//
+//	    logger.info("Fetching notes for sender: {} and receiver: {}", senderNumber, receiverNumber);
+//
+//	    // Fetch the latest note
+//	    List<NotesHistory> notesHistoryList = notesHistoryRepository
+//	            .findByGroupCodeAndReceiverNumberOrderByUpdatedOnDesc(groupCode, receiverNumber);
+//	    System.out.println(notesHistoryList);
+//
+//	    // Return the latest note (first in the list)
+//	    if (notesHistoryList != null && !notesHistoryList.isEmpty()) {
+//	        return notesHistoryList.get(0); // The latest note is the first due to the DESC order
+//	    } else {
+//	        throw new IllegalArgumentException("No notes found for the given groupCode and receiverNumber.");
+//	    }
+//	}
 	@Override
 	public NotesHistory getNotes(String senderNumber, String receiverNumber, String groupCode) {
 	    // Normalize sender and receiver numbers
@@ -73,18 +110,29 @@ public class NotesServiceImpl implements NotesHistoryService{
 
 	    logger.info("Fetching notes for sender: {} and receiver: {}", senderNumber, receiverNumber);
 
-	    // Fetch the latest note
+	    // Fetch the latest note for the given group and receiver number
 	    List<NotesHistory> notesHistoryList = notesHistoryRepository
 	            .findByGroupCodeAndReceiverNumberOrderByUpdatedOnDesc(groupCode, receiverNumber);
-	    System.out.println(notesHistoryList);
-
-	    // Return the latest note (first in the list)
+	    
+	    // If notes are found, check if the receiver exists
 	    if (notesHistoryList != null && !notesHistoryList.isEmpty()) {
-	        return notesHistoryList.get(0); // The latest note is the first due to the DESC order
+	        final String finalReceiverNumber = receiverNumber; // Make receiverNumber effectively final
+	        boolean receiverExists = notesHistoryList.stream()
+	            .anyMatch(note -> note.getReceiverNumber().equals(finalReceiverNumber));
+	        
+	        if (receiverExists) {
+	            // Return the latest note (first in the list)
+	            return notesHistoryList.get(0); // The latest note is the first due to the DESC order
+	        } else {
+	            // If the receiver number is not present in the notes, return null
+	            return null;
+	        }
 	    } else {
-	        throw new IllegalArgumentException("No notes found for the given groupCode and receiverNumber.");
+	        // No notes found for the given groupCode and receiverNumber
+	        return null; // or throw an exception, based on your requirement
 	    }
 	}
+
 
 
 	  @Override
