@@ -100,7 +100,7 @@ public class NotesServiceImpl implements NotesHistoryService{
 	    // Normalize sender and receiver numbers
 	    senderNumber = senderNumber.trim();
 	    receiverNumber = receiverNumber.trim();
-	    
+
 	    if (!senderNumber.startsWith("+")) {
 	        senderNumber = "+" + senderNumber;
 	    }
@@ -110,29 +110,20 @@ public class NotesServiceImpl implements NotesHistoryService{
 
 	    logger.info("Fetching notes for sender: {} and receiver: {}", senderNumber, receiverNumber);
 
-	    // Fetch the latest note for the given group and receiver number
+	    // Fetch the notes based on group code and receiver number
 	    List<NotesHistory> notesHistoryList = notesHistoryRepository
-	            .findByGroupCodeAndReceiverNumberOrderByUpdatedOnDesc(groupCode, receiverNumber);
+	            .findByGroupCodeAndReceiverNumberSorted(groupCode, receiverNumber);
+   System.out.println("testing"+notesHistoryList);
 	    
-	    // If notes are found, check if the receiver exists
+	    // If notes are found and at least one entry matches, return the latest note or null if not found
 	    if (notesHistoryList != null && !notesHistoryList.isEmpty()) {
-	        final String finalReceiverNumber = receiverNumber; // Make receiverNumber effectively final
-	        boolean receiverExists = notesHistoryList.stream()
-	            .anyMatch(note -> note.getReceiverNumber().equals(finalReceiverNumber));
-	        
-	        if (receiverExists) {
-	            // Return the latest note (first in the list)
-	            return notesHistoryList.get(0); // The latest note is the first due to the DESC order
-	        } else {
-	            // If the receiver number is not present in the notes, return null
-	            return null;
-	        }
+	        // If we have data, return the latest note (first in the list)
+	        return notesHistoryList.get(0); // The latest note is the first due to the DESC order
 	    } else {
-	        // No notes found for the given groupCode and receiverNumber
-	        return null; // or throw an exception, based on your requirement
+	        // No matching groupCode and receiverNumber
+	        return null; // or throw an exception based on your requirement
 	    }
 	}
-
 
 
 	  @Override

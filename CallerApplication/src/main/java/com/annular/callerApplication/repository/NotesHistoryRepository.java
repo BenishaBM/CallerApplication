@@ -34,9 +34,11 @@ public interface NotesHistoryRepository extends MongoRepository<NotesHistory, St
     
 //	List<NotesHistory> findByGroupCodeAndReceiverNumberAndSenderNumberOrderByUpdatedOnDesc(String groupCode,
 //			String receiverNumber, String senderNumber);
+    @Query(value = "{ 'groupCode': ?0, 'receiverNumber': ?1 }", sort = "{ 'createdOn': -1 }")
+    List<NotesHistory> findByGroupCodeAndReceiverNumberSorted(String groupCode, String receiverNumber);
 
-    @Query("SELECT nh FROM NotesHistory nh WHERE nh.groupCode = :groupCode AND nh.receiverNumber = :receiverNumber ORDER BY nh.createdOn DESC")
-	List<NotesHistory> findByGroupCodeAndReceiverNumberOrderByUpdatedOnDesc(String groupCode, String receiverNumber);
+
+
 
 	//List<NotesHistory> findByGroupCodeAndReceiverNumberOrderByUpdatedOnDesc(String groupCode, String receiverNumber);
 }
