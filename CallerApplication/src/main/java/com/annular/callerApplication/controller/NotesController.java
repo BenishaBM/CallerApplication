@@ -98,5 +98,24 @@ public class NotesController {
             return new Response(-1, "Unexpected error occurred: " + e.getMessage(), "");
         }
     }
+    
+    @GetMapping("/getNotesByLastThreeData")
+    public Response getNotesByLastThreeData(@RequestParam("senderNumber") String senderNumber,
+                             @RequestParam("receiverNumber") String receiverNumber,
+                             @RequestParam("groupCode") String groupCode) {
+        try {
+            // Fetch notes based on senderNumber, receiverNumber, and groupCode
+            List<NotesHistory> notes = notesHistoryServices.getNotesByLastThreeData(senderNumber, receiverNumber, groupCode);
+            
+            // Assuming 'notes' contains the fetched data
+            return new Response(0, "Success", notes);
+        } catch (IllegalArgumentException e) {
+            // Handle specific case for invalid arguments
+            return new Response(-1, "Error occurred while fetching notes: " + e.getMessage(), "");
+        } catch (Exception e) {
+            // Handle any unexpected errors
+            return new Response(-1, "Unexpected error occurred: " + e.getMessage(), "");
+        }
+    }
 
 }

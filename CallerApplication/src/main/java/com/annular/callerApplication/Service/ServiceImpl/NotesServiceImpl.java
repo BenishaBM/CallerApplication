@@ -205,4 +205,35 @@ public class NotesServiceImpl implements NotesHistoryService{
 	      return notesHistoryList;
 	  }
 
+	  @Override
+	  public List<NotesHistory> getNotesByLastThreeData(String senderNumber, String receiverNumber, String groupCode) {
+	      // Normalize sender and receiver numbers
+	      senderNumber = senderNumber.trim();
+	      receiverNumber = receiverNumber.trim();
+
+	      if (!senderNumber.startsWith("+")) {
+	          senderNumber = "+" + senderNumber;
+	      }
+	      if (!receiverNumber.startsWith("+")) {
+	          receiverNumber = "+" + receiverNumber;
+	      }
+
+	      logger.info("Fetching notes for sender: {} and receiver: {}", senderNumber, receiverNumber);
+
+	      // Fetch the notes based on group code and receiver number
+	      List<NotesHistory> notesHistoryList = notesHistoryRepository
+	              .findByGroupCodeAndReceiverNumberSorted(groupCode, receiverNumber);
+
+	      System.out.println("testing" + notesHistoryList);
+
+	      // If notes are found, return the last three notes or an empty list if none found
+	      if (notesHistoryList != null && !notesHistoryList.isEmpty()) {
+	          // Return the last three notes; ensure the list has at least three entries
+	          return notesHistoryList.size() > 3 ? notesHistoryList.subList(0, 3) : notesHistoryList;
+	      } else {
+	          // No matching groupCode and receiverNumber
+	          return Collections.emptyList(); // Return an empty list instead of null
+	      }
+	  }
+
 }
