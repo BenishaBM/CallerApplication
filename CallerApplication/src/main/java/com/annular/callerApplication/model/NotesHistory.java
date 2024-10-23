@@ -45,4 +45,11 @@ public class NotesHistory {
 	
 	@Field("groupCode")
 	private String groupCode;
+	
+	@Field("emailId")
+	private String emailId;
+	
+	@Field("userName")
+	private String userName;
+	
 }

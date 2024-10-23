@@ -59,6 +59,8 @@ public class NotesServiceImpl implements NotesHistoryService{
 	    notesHistory.setIsActive("true"); // Assuming this is a string; change as necessary
 	    notesHistory.setCreatedOn(LocalDateTime.now());
 	    notesHistory.setCreatedBy(notesHistoryWebModel.getCreatedBy());
+	    notesHistory.setEmailId(notesHistoryWebModel.getEmailId());
+	    notesHistoryWebModel.setUserName(notesHistoryWebModel.getUserName());
 	    notesHistory.setNotes(notesHistoryWebModel.getNotes()); // Assuming NotesWebModel has a method to get notes
 
 	    // Save the NotesHistory entity to the database
