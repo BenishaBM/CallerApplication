@@ -18,4 +18,6 @@ public interface NotesHistoryService {
 
 	List<NotesHistory> getNotesByLastThreeData(String senderNumber, String receiverNumber, String groupCode);
 
+	List<NotesHistory> getNotesByAllData(String senderNumber, String receiverNumber, String groupCode);
+
 }

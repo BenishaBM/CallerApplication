@@ -235,5 +235,29 @@ public class NotesServiceImpl implements NotesHistoryService{
 	          return Collections.emptyList(); // Return an empty list instead of null
 	      }
 	  }
+	  @Override
+	  public List<NotesHistory> getNotesByAllData(String senderNumber, String receiverNumber, String groupCode) {
+	      // Normalize sender and receiver numbers
+	      senderNumber = senderNumber.trim();
+	      receiverNumber = receiverNumber.trim();
+
+	      if (!senderNumber.startsWith("+")) {
+	          senderNumber = "+" + senderNumber;
+	      }
+	      if (!receiverNumber.startsWith("+")) {
+	          receiverNumber = "+" + receiverNumber;
+	      }
+
+	      logger.info("Fetching notes for sender: {} and receiver: {}", senderNumber, receiverNumber);
+
+	      // Fetch the notes based on group code and receiver number
+	      List<NotesHistory> notesHistoryList = notesHistoryRepository
+	              .findByGroupCodeAndReceiverNumberSorted(groupCode, receiverNumber);
+
+	      System.out.println("Fetched notes: " + notesHistoryList);
+
+	      // Return the full list of notes or an empty list if none found
+	      return (notesHistoryList != null) ? notesHistoryList : Collections.emptyList(); // Return an empty list if notesHistoryList is null
+	  }
 
 }
