@@ -37,8 +37,8 @@ public class MailDetails {
 	@Field("updated_by")
 	private Integer updatedBy;
 
-	@Field("quotationData")
-	private String quotationData;
+//	@Field("quotationData")
+//	private String quotationData;
 	
 	@Field("addressDetails")
 	private String addressDetails;
@@ -48,5 +48,8 @@ public class MailDetails {
 	
 	@Field("phoneNumber")
 	private String phoneNumber;
+	
+	@Field("quotationData")
+	private QuotationData quotationData;
 
 }

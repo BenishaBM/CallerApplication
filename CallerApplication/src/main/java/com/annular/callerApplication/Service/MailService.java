@@ -1,6 +1,9 @@
 package com.annular.callerApplication.Service;
 
 import java.util.List;
+import java.util.Map;
+
+import org.springframework.http.ResponseEntity;
 
 import com.annular.callerApplication.model.MailDetails;
 import com.annular.callerApplication.model.NotesHistory;
@@ -11,6 +14,6 @@ public interface MailService {
 
 	MailDetails saveMail(MailDetailsWebModel mailDetailsWebModel);
 
-	List<MailDetails> getAllMail();
+	ResponseEntity<Map<String, Object>> getAllMail();
 
 }

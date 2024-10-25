@@ -24,7 +24,7 @@ public class MailDetailsWebModel {
 	private LocalDateTime updatedOn;
 	private Integer createdBy;
 	private Integer updatedBy;
-	private String quotationData;
+	private QuotationDataWebModel quotationData; // Changed to use the nested model
 	private String addressDetails;
 	private String nameData;
 	private String phoneNumber;

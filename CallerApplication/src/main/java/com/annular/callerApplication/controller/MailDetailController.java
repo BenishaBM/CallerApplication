@@ -1,8 +1,10 @@
 package com.annular.callerApplication.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -38,8 +40,13 @@ public class MailDetailController {
     @GetMapping("/getAllMail")
     public Response getAllMail() {
         try {
-            List<MailDetails> mailDetailsList = mailService.getAllMail();
-            return new Response(1, "success", mailDetailsList);
+            ResponseEntity<Map<String, Object>> mailDetailsList = mailService.getAllMail();
+            // Extracting the response body from the ResponseEntity
+            Map<String, Object> mailDetailsData = mailDetailsList.getBody();
+            
+            // Returning a custom Response object with status, message, and data
+            return new Response(1, "success", mailDetailsData);
+           // return new Response(1, "success", mailDetailsList);
         } catch (IllegalArgumentException e) {
             return new Response(-1, "Error occurred while fetching mail: " + e.getMessage(), null);
         } catch (Exception e) {
