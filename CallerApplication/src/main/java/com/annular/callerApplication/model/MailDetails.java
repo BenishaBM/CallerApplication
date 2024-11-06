@@ -51,5 +51,8 @@ public class MailDetails {
 	
 	@Field("quotationData")
 	private QuotationData quotationData;
+	
+	@Field("emailSummary")
+	private String emailSummary;
 
 }

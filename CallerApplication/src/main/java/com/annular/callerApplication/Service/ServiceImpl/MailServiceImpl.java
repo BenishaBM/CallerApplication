@@ -41,6 +41,7 @@ public class MailServiceImpl implements MailService {
 	    // Set createdBy and updatedBy fields
 	    mailDetails.setCreatedBy(mailDetailsWebModel.getCreatedBy());
 	    mailDetails.setUpdatedBy(mailDetailsWebModel.getUpdatedBy());
+	    mailDetails.setEmailSummary(mailDetailsWebModel.getEmailSummary());
 	    
 	    // Handle the mapping of quotationData
 	    if (mailDetailsWebModel.getQuotationData() != null) {
@@ -103,6 +104,7 @@ public class MailServiceImpl implements MailService {
 	        formattedData.put("updatedBy", mailDetails.getUpdatedBy());
 	        formattedData.put("addressDetails", mailDetails.getAddressDetails());
 	        formattedData.put("nameData", mailDetails.getNameData());
+	        formattedData.put("emailSummary", mailDetails.getEmailSummary());
 	        formattedData.put("phoneNumber", mailDetails.getPhoneNumber() != null ? mailDetails.getPhoneNumber() : "N/A");
 
 	        // Handle the quotationData formatting

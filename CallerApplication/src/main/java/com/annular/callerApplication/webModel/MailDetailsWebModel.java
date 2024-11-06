@@ -28,6 +28,7 @@ public class MailDetailsWebModel {
 	private String addressDetails;
 	private String nameData;
 	private String phoneNumber;
+	private String emailSummary;
 
 
 }
